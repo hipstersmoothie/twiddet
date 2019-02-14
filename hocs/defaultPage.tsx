@@ -4,6 +4,7 @@ import Router from 'next/router';
 import styled from 'styled-components';
 
 import { getUserFromServerCookie, getUserFromLocalCookie } from '../utils/auth';
+import { NextContext, NextComponentType } from 'next';
 
 const App = styled.div`
   height: 100vh;
@@ -16,28 +17,36 @@ const Main = styled.div`
   padding: 30px;
 `;
 
-export default Page =>
-  class DefaultPage extends React.Component {
-    static getInitialProps(ctx) {
+export interface DefaultPageProps {
+  currentUrl: string;
+  isAuthenticated: boolean;
+  loggedUser: any;
+}
+
+const defaultPage = <P extends object>(Page: NextComponentType<P>) =>
+  class DefaultPage extends React.Component<P & DefaultPageProps> {
+    static getInitialProps(ctx: NextContext) {
       const loggedUser = process.browser
         ? getUserFromLocalCookie()
         : getUserFromServerCookie(ctx.req);
+
       const pageProps = Page.getInitialProps && Page.getInitialProps(ctx);
+
       return {
         ...pageProps,
         loggedUser,
         currentUrl: ctx.pathname,
         isAuthenticated: !!loggedUser
-      };
+      } as P & DefaultPageProps;
     }
 
-    constructor(props) {
+    constructor(props: P & DefaultPageProps) {
       super(props);
 
       this.logout = this.logout.bind(this);
     }
 
-    logout(eve) {
+    logout(eve: StorageEvent) {
       if (eve.key === 'logout') {
         Router.push(`/?logout=${eve.newValue}`);
       }
@@ -66,3 +75,5 @@ export default Page =>
       );
     }
   };
+
+export default defaultPage;

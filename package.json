@@ -19,9 +19,14 @@
     "dev": "nodemon"
   },
   "devDependencies": {
+    "@types/auth0-js": "^8.11.11",
     "@types/express": "^4.16.1",
+    "@types/js-cookie": "^2.2.1",
+    "@types/jwt-decode": "^2.2.1",
     "@types/next": "^8.0.1",
     "@types/node": "^11.9.4",
+    "@types/styled-components": "^4.1.10",
+    "fork-ts-checker-webpack-plugin": "^0.5.2",
     "nodemon": "^1.18.10",
     "ts-node": "^8.0.2",
     "typescript": "^3.3.3"

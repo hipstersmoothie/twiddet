@@ -1,20 +1,13 @@
-import React from 'react';
+import * as React from 'react';
 import PropTypes from 'prop-types';
-import Link from 'next/link';
 import styled from 'styled-components';
 
-import defaultPage from '../hocs/defaultPage';
 import securePage from '../hocs/securePage';
 
 const Main = styled.div`
   max-width: 750px;
   margin: 0 auto;
   text-align: center;
-`;
-const Heading = styled.h1`
-  font-size: 40px;
-  font-weight: 200;
-  line-height: 40px;
 `;
 const Content = styled.p`
   font-size: 20px;
@@ -28,24 +21,8 @@ const InputLabel = styled.label`
 const Input = styled.input`
   min-width: 400px;
 `;
-const ContentLink = styled.a`
-  color: #333;
-  padding-bottom: 2px;
-  border-bottom: 1px solid #ccc;
-  text-decoration: none;
-  font-weight: 400;
-  line-height: 30px;
-  transition: border-bottom 0.2s;
-  &:hover {
-    border-bottomcolor: #333;
-  }
-`;
 
-const createLink = (href, text) => (
-  <ContentLink href={href}>{text}</ContentLink>
-);
-
-async function fetchTweet(tweet) {
+async function fetchTweet(tweet: string) {
   // You can await here
   console.log(tweet);
   try {
@@ -53,9 +30,9 @@ async function fetchTweet(tweet) {
   } catch (error) {}
 }
 
-const Index = ({ isAuthenticated, ...props }) => {
+const Index = () => {
   const [userInput, setUserInput] = React.useState('');
-  const [tweet, setTweet] = React.useState(null);
+  const [tweet, setTweet] = React.useState('');
 
   React.useEffect(() => {
     if (!tweet) {
