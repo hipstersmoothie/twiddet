@@ -1,3 +1,3 @@
-const plugin0 = require('@zeit/next-typescript');
+const typescript = require('@zeit/next-typescript');
 
-module.exports = plugin0({});
+module.exports = typescript({});
