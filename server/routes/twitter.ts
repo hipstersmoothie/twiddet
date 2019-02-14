@@ -1,8 +1,9 @@
-const express = require('express');
+import * as express from 'express';
+
 const router = express.Router();
 
 router.get('/tweet', (req, res) => {
   res.end("We made it! And it's great");
 });
 
-module.exports = router;
+export default router;

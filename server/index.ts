@@ -1,6 +1,6 @@
-const express = require('express');
-const next = require('next');
-const twitter = require('./routes/twitter');
+import * as express from 'express';
+import * as next from 'next';
+import twitter from './routes/twitter';
 
 const PORT = process.env.PORT || 3000;
 const dev = process.env.NODE_ENV !== 'production';
@@ -14,8 +14,8 @@ async function startServer() {
     const server = express();
 
     server.use('/api', twitter);
-    server.get('*', handle);
-    server.listen(PORT, err => {
+    server.get('*', (req, res) => handle(req, res));
+    server.listen(PORT, (err: Error) => {
       if (err) {
         throw err;
       }
