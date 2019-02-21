@@ -34,6 +34,13 @@
   top: 67px;
 }
 
+.checkmark {
+  fill: rgba(29, 161, 242, 1);
+  width: 25px;
+  height: 25px;
+  padding: 0 5px;
+}
+
 .connector.collapsed {
   border-color: rgb(187, 194, 201);
 }
@@ -77,8 +84,16 @@
 .name,
 .screen-name,
 .full-text,
-.time-since-posted {
+.time-since-posted,
+.link-card-title,
+.link-card-link,
+.link-card-description {
   font-size: 15px;
+}
+
+.name {
+  display: inline-flex;
+  align-items: center;
 }
 
 .time-spacer {
@@ -112,6 +127,43 @@
   width: fit-content;
 }
 
+.link-card-wrapper {
+  display: flex;
+  border-radius: 14px;
+  border: 1px solid rgb(204, 214, 221);
+  text-decoration: none;
+  margin-top: 10px;
+}
+
+.link-card-title {
+  font-weight: 400;
+  color: rgb(20, 23, 26);
+}
+
+.link-card-link,
+.link-card-description {
+  font-weight: 400;
+  line-height: 1.4;
+  color: rgb(101, 119, 134);
+}
+
+.link-card-image {
+  border-right: 1px solid rgb(204, 214, 221);
+  min-width: 125px;
+  min-height: 125px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.link-card-content {
+  padding: 10px;
+}
+
+.link-card-content * {
+  text-decoration: none;
+}
+
 .root-tweet .full-text {
   font-size: 23px;
   padding-bottom: 15px;
@@ -124,6 +176,7 @@
 
 .root-tweet .full-text,
 .root-tweet .attached-media,
+.root-tweet .time-since-posted,
 .root-tweet .media-stats {
   margin-left: 50px;
 }

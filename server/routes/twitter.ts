@@ -8,7 +8,7 @@ function setUpTwitter() {
   const headers = {
     authorization:
       'Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA',
-    'x-guest-token': '1098637649294778374'
+    'x-guest-token': '1098681333432299520'
   };
   const memo = new Map<string, any>();
 

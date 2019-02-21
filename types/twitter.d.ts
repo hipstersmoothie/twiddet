@@ -205,6 +205,7 @@ export interface User {
   profile_interstitial_type: string;
   business_profile_state: string;
   translator_type: string;
+  verified: boolean;
 }
 
 export interface TweetReference {
