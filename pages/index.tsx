@@ -154,7 +154,12 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node, isRoot }) => {
           <TreeNode key={child.module.id_str} node={child} />
         ))}
       </TreeView>
-      <div className="connector" onClick={toggleCollapsed} />
+      <div
+        className={`connector ${collapsed &&
+          node.children.length > 0 &&
+          'collapsed'}`}
+        onClick={toggleCollapsed}
+      />
     </div>
   );
 };

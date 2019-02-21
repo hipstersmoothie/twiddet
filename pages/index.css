@@ -20,7 +20,6 @@
 }
 
 .connector {
-  border-color: rgb(29, 161, 242);
   border-color: rgb(237, 239, 241);
   border-radius: 2px;
   border-style: solid;
@@ -33,6 +32,10 @@
   width: 0;
   z-index: 1;
   top: 67px;
+}
+
+.connector.collapsed {
+  border-color: rgb(187, 194, 201);
 }
 
 .connector:hover {
