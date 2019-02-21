@@ -101,9 +101,9 @@ export default class TreeConverter {
   }
 
   private async processReplies(conversation: Conversation) {
-    // TODO: might get rate limited less if we do these sequentially
-    await Promise.all(
-      Object.values(conversation.globalObjects.tweets).map(async tweet => {
+    await Object.values(conversation.globalObjects.tweets).reduce(
+      async (lastRun, tweet) => {
+        await lastRun;
         const node = this.tweetMap.get(tweet.id_str);
 
         if (
@@ -113,13 +113,15 @@ export default class TreeConverter {
         ) {
           const subTweet = await this.getTweet(tweet.id_str);
           this.processedReplies.add(tweet.id_str);
+
           // TODO: figure out quoted tweets
           if (this.tweetMap.get(tweet.in_reply_to_status_id_str)) {
             console.log('GETTING', tweet);
             await this.convertConversation(subTweet, tweet.id_str);
           }
         }
-      })
+      },
+      Promise.resolve()
     );
   }
 
