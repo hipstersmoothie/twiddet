@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import fetch from 'isomorphic-unfetch';
 import TreeView from 'react-treeview';
 import linkifyUrls from 'linkify-urls';
+import { format } from 'timeago.js';
 
 import { TweetTree, Tweet } from 'types/twitter';
 
@@ -87,6 +88,11 @@ const TweetComponent: React.FC<TweetProps> = ({
     ? React.Fragment
     : ({ children }) => <div className="content">{children}</div>;
   const media: React.ReactNode[] = [];
+  const timeSince = (
+    <span className="time-since-posted">
+      {format(tweet.created_at, 'en_US')}
+    </span>
+  );
   let displayText = tweet.full_text;
 
   if (tweet.entities.media) {
@@ -130,6 +136,12 @@ const TweetComponent: React.FC<TweetProps> = ({
           <div className="author-details">
             <span className="name">{tweet.user.name}</span>{' '}
             <span className="screen-name">@{tweet.user.screen_name}</span>
+            {!isRoot && (
+              <React.Fragment>
+                <span className="time-spacer">·</span>
+                {timeSince}
+              </React.Fragment>
+            )}
           </div>
         </div>
         <p
@@ -140,7 +152,10 @@ const TweetComponent: React.FC<TweetProps> = ({
             })
           }}
         />
-        <div className="attached-media">{media}</div>
+        <div className="attached-media">
+          {media}
+          {isRoot && timeSince}
+        </div>
         <p className="media-stats">
           <ReplyCount count={tweet.reply_count} />
           <RetweetCount count={tweet.retweet_count} />

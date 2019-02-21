@@ -76,8 +76,13 @@
 
 .name,
 .screen-name,
-.full-text {
+.full-text,
+.time-since-posted {
   font-size: 15px;
+}
+
+.time-spacer {
+  padding: 0 5px;
 }
 
 .author-image {
@@ -91,6 +96,7 @@
   padding-right: 3px;
 }
 
+.time-since-posted,
 .screen-name {
   color: rgb(136, 153, 166);
 }
@@ -109,6 +115,11 @@
 .root-tweet .full-text {
   font-size: 23px;
   padding-bottom: 15px;
+}
+
+.root-tweet .time-since-posted {
+  padding-top: 10px;
+  display: block;
 }
 
 .root-tweet .full-text,
