@@ -2,7 +2,7 @@ import App, { Container, NextAppContext } from 'next/app';
 import Head from 'next/head';
 import React from 'react';
 
-import 'react-ui-tree/dist/react-ui-tree.css';
+import 'react-treeview/react-treeview.css';
 import './index.css';
 
 export default class MyApp extends App {

@@ -1,20 +1,16 @@
 import * as React from 'react';
 import styled from 'styled-components';
 import fetch from 'isomorphic-unfetch';
-import Tree, { TreeNode } from 'react-ui-tree';
+import TreeView from 'react-treeview';
+import linkifyUrls from 'linkify-urls';
 
-import {
-  Conversation,
-  ConversationContent,
-  TweetReference,
-  Tweet,
-  ConversationThread
-} from 'types/twitter';
+import { TweetTree, Tweet } from 'types/twitter';
 
 const Main = styled.div`
-  max-width: 750px;
+  width: 50%;
   margin: 0 auto;
   text-align: center;
+  min-width: 750px;
 `;
 const Content = styled.div`
   font-size: 20px;
@@ -35,101 +31,150 @@ const TreeNodeWrapper = styled.div`
   padding-bottom: 20px;
 `;
 
-async function fetchTweet(tweet: string) {
-  try {
-    const result = await fetch(`http://localhost:3000/api/tweet/${tweet}`);
-    const body: Conversation = await result.json();
+async function fetchTweet(tweet: string): Promise<TweetTree> {
+  const result = await fetch(`http://localhost:3000/api/tweet/${tweet}`);
+  const body: TweetTree = await result.json();
 
-    return body;
-  } catch (error) {}
+  return body;
 }
+
+interface TreeNodeProps {
+  node: TweetTree;
+  isRoot?: boolean;
+}
+
+interface TweetProps {
+  isRoot?: boolean;
+  tweet: Tweet;
+  collapsed: boolean;
+  setCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const ReplyCount = ({ count }) => {
+  return (
+    <span className="icon">
+      <i className="far fa-comment" />
+      <span className="count">{count}</span>
+    </span>
+  );
+};
+
+const RetweetCount = ({ count }) => {
+  return (
+    <span className="icon">
+      <i className="fas fa-retweet" />
+      <span className="count">{count}</span>
+    </span>
+  );
+};
+
+const FavoriteCount = ({ count }) => {
+  return (
+    <span className="icon">
+      <i className="far fa-heart" />
+      <span className="count">{count}</span>
+    </span>
+  );
+};
+
+const TweetComponent: React.FC<TweetProps> = ({
+  isRoot,
+  tweet,
+  collapsed,
+  setCollapsed
+}) => {
+  const Wrapper = isRoot
+    ? React.Fragment
+    : ({ children }) => <div className="content">{children}</div>;
+
+  return (
+    <TreeNodeWrapper
+      onClick={() => setCollapsed(!collapsed)}
+      className={isRoot ? 'root-tweet' : 'sub-tweet'}
+    >
+      {!isRoot && (
+        <img
+          className="author-image"
+          src={tweet.user.profile_image_url_https}
+        />
+      )}
+
+      <Wrapper>
+        <div className="author">
+          {isRoot && (
+            <img
+              className="author-image"
+              src={tweet.user.profile_image_url_https}
+            />
+          )}
+          <div className="author-details">
+            <span className="name">{tweet.user.name}</span>{' '}
+            <span className="screen-name">@{tweet.user.screen_name}</span>
+          </div>
+        </div>
+        <p
+          className="full-text"
+          dangerouslySetInnerHTML={{
+            __html: linkifyUrls(tweet.full_text, {
+              type: 'string'
+            })
+          }}
+        />
+        <p className="media-stats">
+          <ReplyCount count={tweet.reply_count} />
+          <RetweetCount count={tweet.retweet_count} />
+          <FavoriteCount count={tweet.favorite_count} />
+        </p>
+      </Wrapper>
+    </TreeNodeWrapper>
+  );
+};
+
+const TreeNode: React.FC<TreeNodeProps> = ({ node, isRoot }) => {
+  const [collapsed, setCollapsed] = React.useState(false);
+  const toggleCollapsed = () => setCollapsed(!collapsed);
+
+  return (
+    <div className="tree-node">
+      <TreeView
+        onClick={toggleCollapsed}
+        treeViewClassName={isRoot ? 'no-border' : ''}
+        nodeLabel={
+          <TweetComponent
+            isRoot={isRoot}
+            tweet={node.module}
+            collapsed={collapsed}
+            setCollapsed={setCollapsed}
+          />
+        }
+        collapsed={collapsed}
+        style={node.children.length > 0 ? {} : { opacity: 0 }}
+      >
+        {node.children.map(child => (
+          <TreeNode key={child.module.id_str} node={child} />
+        ))}
+      </TreeView>
+      <div className="connector" onClick={toggleCollapsed} />
+    </div>
+  );
+};
 
 interface ConversationComponentProps {
-  conversation: Conversation;
-}
-
-const isTweet = (content: ConversationContent): content is TweetReference => {
-  return content.hasOwnProperty('tweet');
-};
-
-const isConversation = (
-  content: ConversationContent
-): content is ConversationThread => {
-  return content.hasOwnProperty('conversationThread');
-};
-
-function insertTweetIntoTree(
-  tree: TreeNode<Tweet>,
-  conversation: Conversation,
-  content: ConversationContent
-) {
-  if (isTweet(content)) {
-    if (!tree.module) {
-      tree.module = conversation.globalObjects.tweets[content.tweet.id];
-      tree.children = [];
-    }
-  } else if (isConversation(content)) {
-    let parent = tree;
-
-    content.conversationThread.conversationComponents.map(tweet => {
-      const newNode = {
-        module:
-          conversation.globalObjects.tweets[
-            tweet.conversationTweetComponent.tweet.id
-          ],
-        children: []
-      };
-      parent.children.push(newNode);
-      parent = newNode;
-    });
-
-    // tree.children = parent.children;
-  }
-
-  return tree;
-}
-
-function convertConversationToTree(
-  conversation: Conversation
-): TreeNode<Tweet> {
-  return conversation.timeline.instructions.reduce(
-    (all, instruction) => {
-      instruction.addEntries.entries.map(entry => {
-        if (entry.content.operation) {
-          return;
-        }
-
-        insertTweetIntoTree(all, conversation, entry.content.item.content);
-      });
-
-      return all;
-    },
-    {} as TreeNode<Tweet>
-  );
+  tree?: TweetTree;
 }
 
 const ConversationComponent: React.FC<ConversationComponentProps> = ({
-  conversation
+  tree
 }) => {
-  const [active, setActive] = React.useState(null);
-  console.log({ conversation });
-  console.log(convertConversationToTree(conversation));
+  if (!tree) {
+    return null;
+  }
+
+  console.log(tree);
+
   return (
     <ConversationTree>
-      <Tree
-        tree={convertConversationToTree(conversation)}
-        renderNode={(node: TreeNode<Tweet>) => {
-          return (
-            <TreeNodeWrapper className={`node active`}>
-              {
-                conversation.globalObjects.users[node.module.user_id_str]
-                  .screen_name
-              }
-              : {node.module.full_text}
-            </TreeNodeWrapper>
-          );
-        }}
-      />
+      <TreeNode node={tree} isRoot />
     </ConversationTree>
   );
 };
@@ -137,16 +182,14 @@ const ConversationComponent: React.FC<ConversationComponentProps> = ({
 const Index = () => {
   const [userInput, setUserInput] = React.useState('');
   const [tweet, setTweet] = React.useState('');
-  const [conversation, setConversation] = React.useState<
-    Conversation | undefined
-  >(undefined);
+  const [tree, setTree] = React.useState<TweetTree | undefined>(undefined);
 
   React.useEffect(() => {
     if (!tweet) {
       return;
     }
 
-    fetchTweet(tweet).then(body => setConversation(body));
+    fetchTweet(tweet).then(body => setTree(body));
   }, [tweet]);
 
   return (
@@ -171,9 +214,7 @@ const Index = () => {
               setTweet(id);
             }}
           />
-          {conversation && (
-            <ConversationComponent conversation={conversation} />
-          )}
+          <ConversationComponent tree={tree} />
         </Content>
       </Main>
     </div>

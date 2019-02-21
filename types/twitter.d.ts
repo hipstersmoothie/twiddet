@@ -1,3 +1,5 @@
+import { TreeNode } from 'react-treeview';
+
 export interface Url {
   url: string;
   expanded_url: string;
@@ -109,6 +111,7 @@ export interface Tweet {
   card: Card;
   lang: string;
   self_thread: SelfThread;
+  user: User;
 }
 
 export interface UrlMap {
@@ -194,7 +197,12 @@ export interface ConversationThread {
 }
 
 export interface Operation {
-  operation: never;
+  operation: {
+    cursor: {
+      value: string;
+      cursorType: 'Bottom';
+    };
+  };
 }
 
 export type ConversationContent = TweetReference | ConversationThread;
@@ -217,16 +225,24 @@ export interface Instruction {
   };
 }
 
+export interface TweetMap {
+  [index: string]: Tweet;
+}
+
+export interface UserMap {
+  [index: string]: User;
+}
+
+export interface GlobalObjects {
+  tweets: TweetMap;
+  users: UserMap;
+}
+
 export interface Conversation {
-  globalObjects: {
-    tweets: {
-      [key: sting]: Tweet;
-    };
-    users: {
-      [key: sting]: User;
-    };
-  };
+  globalObjects: GlobalObjects;
   timeline: {
     instructions: Instruction[];
   };
 }
+
+export type TweetTree = TreeNode<Tweet>;
