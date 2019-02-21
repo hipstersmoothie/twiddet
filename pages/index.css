@@ -99,12 +99,20 @@
   display: flex;
 }
 
+.attached-media {
+  border-radius: 15px;
+  overflow: hidden;
+  display: grid;
+  width: fit-content;
+}
+
 .root-tweet .full-text {
   font-size: 23px;
   padding-bottom: 15px;
 }
 
 .root-tweet .full-text,
+.root-tweet .attached-media,
 .root-tweet .media-stats {
   margin-left: 50px;
 }

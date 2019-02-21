@@ -7,8 +7,41 @@ export interface Url {
   indices: number[];
 }
 
-export interface UrlList {
-  urls: Url[];
+export interface Hashtag {
+  text: string;
+  indices: number[];
+}
+
+export interface Size {
+  w: number;
+  h: number;
+  resize: string;
+}
+
+export interface Sizes {
+  medium: Size;
+  thumb: Size;
+  large: Size;
+  small: Size;
+}
+
+export interface Media {
+  id_str: string;
+  indices: number[];
+  media_url: string;
+  media_url_https: string;
+  url: string;
+  display_url: string;
+  expanded_url: string;
+  type: string;
+  sizes: Sizes;
+}
+
+export interface Entities {
+  url: UrlMap;
+  hashtags: Hashtag[];
+  media: Media[];
+  description: Description;
 }
 
 export interface VanityUrl {
@@ -97,7 +130,7 @@ export interface Tweet {
   id_str: string;
   full_text: string;
   display_text_range: number[];
-  entities: UrlList;
+  entities: Entities;
   source: string;
   in_reply_to_status_id_str: string;
   in_reply_to_user_id_str: string;
@@ -119,11 +152,6 @@ export interface UrlMap {
 }
 
 export interface Description {}
-
-export interface Entities {
-  url: UrlMap;
-  description: Description;
-}
 
 export interface ProfileImageExtensionsMediaColor {
   palette: Palette[];

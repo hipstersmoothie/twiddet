@@ -86,6 +86,26 @@ const TweetComponent: React.FC<TweetProps> = ({
   const Wrapper = isRoot
     ? React.Fragment
     : ({ children }) => <div className="content">{children}</div>;
+  const media: React.ReactNode[] = [];
+  let displayText = tweet.full_text;
+
+  if (tweet.entities.media) {
+    tweet.entities.media.map(entity => {
+      if (entity.type === 'photo') {
+        media.push(
+          <img
+            key={entity.id_str}
+            src={entity.media_url}
+            height={entity.sizes.small.h}
+            width={entity.sizes.small.w}
+          />
+        );
+      }
+      displayText =
+        displayText.substr(0, entity.indices[0]) +
+        displayText.substr(entity.indices[1], displayText.length);
+    });
+  }
 
   return (
     <TreeNodeWrapper
@@ -115,11 +135,12 @@ const TweetComponent: React.FC<TweetProps> = ({
         <p
           className="full-text"
           dangerouslySetInnerHTML={{
-            __html: linkifyUrls(tweet.full_text, {
+            __html: linkifyUrls(displayText, {
               type: 'string'
             })
           }}
         />
+        <div className="attached-media">{media}</div>
         <p className="media-stats">
           <ReplyCount count={tweet.reply_count} />
           <RetweetCount count={tweet.retweet_count} />
