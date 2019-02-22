@@ -128,16 +128,25 @@ const TweetComponent: React.FC<TweetProps> = ({
 
       <style jsx>{`
         .tweet {
-          padding-bottom: 20px;
+          padding-bottom: 15px;
+          width: 100%;
         }
 
         .sub-tweet {
           display: flex;
         }
 
+        :global(.content) {
+          width: 100%;
+        }
+
         .media-stats {
           display: flex;
           margin-top: 10px;
+          border-bottom: 2px solid rgb(237, 239, 241);
+          border-radius: 0px;
+          padding-bottom: 10px;
+          width: 100%;
         }
 
         .name {

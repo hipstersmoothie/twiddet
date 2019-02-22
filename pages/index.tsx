@@ -57,8 +57,8 @@ const Index = () => {
   const [tweet, setTweet] = React.useState('');
 
   return (
-    <div>
-      <main>
+    <div className="background">
+      <div className="hero">
         <label>Please enter a tweet id or a URL to a tweet</label>
         <input
           value={userInput}
@@ -77,6 +77,8 @@ const Index = () => {
             setTweet(id);
           }}
         />
+      </div>
+      <main>
         {tweet && (
           <section>
             <TweetLoader tweet={tweet} />
@@ -85,27 +87,51 @@ const Index = () => {
       </main>
 
       <style jsx>{`
-        main {
-          width: 50%;
-          margin: 0 auto;
-          text-align: center;
-          min-width: 750px;
+        .background {
+          background-color: rgb(230, 236, 240);
+          min-height: 100vh;
+          height: 100%;
           font-size: 20px;
           font-weight: 200;
           line-height: 30px;
+          text-align: center;
+        }
+
+        main {
+          width: 50%;
+          margin: 0 auto;
+          min-width: 750px;
         }
 
         label {
-          padding-bottom: 10px;
+          padding-bottom: 25px;
           display: block;
         }
 
         input {
           min-width: 400px;
+          border-radius: 9999px;
+          text-indent: 20px;
+          font-size: 20px;
+          height: 35px;
+          text-align: center;
         }
 
         section {
           text-align: left;
+          background: white;
+          padding-top: 20px;
+          padding-right: 30px;
+          padding-bottom: 40px;
+          margin-bottom: 80px;
+        }
+
+        .hero {
+          background: rgb(29, 161, 242);
+          color: white;
+          padding: 100px;
+          font-size: 26px;
+          margin-bottom: 25px;
         }
       `}</style>
     </div>
