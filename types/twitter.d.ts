@@ -145,6 +145,9 @@ export interface Tweet {
   lang: string;
   self_thread: SelfThread;
   user: User;
+  is_quote_status: boolean;
+  quoted_status_id_str: string;
+  quote?: Tweet;
 }
 
 export interface UrlMap {

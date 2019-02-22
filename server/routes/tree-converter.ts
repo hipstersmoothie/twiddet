@@ -87,9 +87,20 @@ export default class TreeConverter {
   }
 
   private makeTreeNode(conversation: Conversation, tweet: Tweet): TweetTree {
+    let quote: Tweet | undefined = undefined;
+
+    if (tweet.is_quote_status) {
+      quote = conversation.globalObjects.tweets[tweet.quoted_status_id_str];
+
+      if (quote) {
+        quote.user = conversation.globalObjects.users[quote.user_id_str];
+      }
+    }
+
     const node = {
       module: {
         ...tweet,
+        quote,
         user: conversation.globalObjects.users[tweet.user_id_str]
       },
       children: []

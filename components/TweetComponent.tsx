@@ -27,13 +27,15 @@ const VerifiedCheckMark = () => (
 interface TweetProps {
   isRoot?: boolean;
   tweet: Tweet;
-  collapsed: boolean;
+  collapsed?: boolean;
+  isQuote?: boolean;
   setCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const TweetComponent: React.FC<TweetProps> = ({
   isRoot,
   tweet,
+  isQuote,
   collapsed,
   setCollapsed
 }) => {
@@ -45,7 +47,7 @@ const TweetComponent: React.FC<TweetProps> = ({
         <div className="content">{children}</div>
       );
 
-  if (tweet.entities.media) {
+  if (tweet.entities && tweet.entities.media) {
     tweet.entities.media.map(entity => {
       if (entity.type === 'photo') {
         media.push(
@@ -68,10 +70,11 @@ const TweetComponent: React.FC<TweetProps> = ({
       onClick={() => setCollapsed(!collapsed)}
       className={makeClass('tweet', {
         'root-tweet': isRoot,
-        'sub-tweet': !isRoot
+        'sub-tweet': !isRoot,
+        'quote-tweet': isQuote
       })}
     >
-      {!isRoot && (
+      {!isRoot && !isQuote && (
         <a href={`https://twitter.com/${tweet.user.screen_name}`}>
           <img
             className="author-image"
@@ -124,6 +127,13 @@ const TweetComponent: React.FC<TweetProps> = ({
         />
         <div className="attached-media">{media}</div>
         <LinkCard tweet={tweet} />
+        {tweet.quote && (
+          <TweetComponent
+            isQuote
+            tweet={tweet.quote}
+            setCollapsed={setCollapsed}
+          />
+        )}
         {isRoot && (
           <span className="time-since-posted">
             {format(tweet.created_at, 'en_US')}
@@ -142,6 +152,14 @@ const TweetComponent: React.FC<TweetProps> = ({
           width: 100%;
         }
 
+        .quote-tweet {
+          border-radius: 14px;
+          border: 1px solid rgb(204, 214, 221);
+          padding: 15px;
+          width: fit-content;
+          margin: 20px 0;
+        }
+
         .sub-tweet {
           display: flex;
         }
@@ -156,7 +174,7 @@ const TweetComponent: React.FC<TweetProps> = ({
           border-bottom: 2px solid rgb(237, 239, 241);
           border-radius: 0px;
           padding-bottom: 10px;
-          width: 100%;
+          width: calc(100% - 50px);
         }
 
         .name {
@@ -200,7 +218,11 @@ const TweetComponent: React.FC<TweetProps> = ({
           border-radius: 15px;
           overflow: hidden;
           display: grid;
-          width: fit-content;
+
+          :global(img) {
+            height: auto;
+            width: 100%;
+          }
         }
 
         .root-tweet {
