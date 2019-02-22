@@ -51,7 +51,11 @@ interface TweetProps {
   setCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const ReplyCount = ({ count }) => {
+interface CountProps {
+  count: number;
+}
+
+const ReplyCount: React.FC<CountProps> = ({ count }) => {
   return (
     <span className="icon">
       <i className="far fa-comment" />
@@ -60,7 +64,7 @@ const ReplyCount = ({ count }) => {
   );
 };
 
-const RetweetCount = ({ count }) => {
+const RetweetCount: React.FC<CountProps> = ({ count }) => {
   return (
     <span className="icon">
       <i className="fas fa-retweet" />
@@ -69,7 +73,7 @@ const RetweetCount = ({ count }) => {
   );
 };
 
-const FavoriteCount = ({ count }) => {
+const FavoriteCount: React.FC<CountProps> = ({ count }) => {
   return (
     <span className="icon">
       <i className="far fa-heart" />
@@ -142,16 +146,18 @@ const TweetComponent: React.FC<TweetProps> = ({
   collapsed,
   setCollapsed
 }) => {
-  const Wrapper = isRoot
-    ? React.Fragment
-    : ({ children }) => <div className="content">{children}</div>;
+  let displayText = tweet.full_text;
   const media: React.ReactNode[] = [];
   const timeSince = (
     <span className="time-since-posted">
       {format(tweet.created_at, 'en_US')}
     </span>
   );
-  let displayText = tweet.full_text;
+  const Wrapper = isRoot
+    ? React.Fragment
+    : ({ children }: { children: React.ReactNode }) => (
+        <div className="content">{children}</div>
+      );
 
   if (tweet.entities.media) {
     tweet.entities.media.map(entity => {
