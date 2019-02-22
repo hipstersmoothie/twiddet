@@ -1,5 +1,6 @@
 import * as React from 'react';
 import fetch from 'isomorphic-unfetch';
+import { ClipLoader } from 'react-spinners';
 
 import { TweetTree } from 'types/twitter';
 import TreeNode from '../components/TreeNode';
@@ -11,9 +12,11 @@ async function fetchTweet(tweet: string): Promise<TweetTree> {
   return body;
 }
 
-const Index = () => {
-  const [userInput, setUserInput] = React.useState('');
-  const [tweet, setTweet] = React.useState('');
+interface TweetLoaderProps {
+  tweet: string;
+}
+
+const TweetLoader: React.FC<TweetLoaderProps> = ({ tweet }) => {
   const [tree, setTree] = React.useState<TweetTree | undefined>(undefined);
 
   React.useEffect(() => {
@@ -21,8 +24,37 @@ const Index = () => {
       return;
     }
 
+    setTree(undefined);
     fetchTweet(tweet).then(body => setTree(body));
   }, [tweet]);
+
+  if (!tree) {
+    return (
+      <div className="wrapper">
+        <ClipLoader
+          sizeUnit={'px'}
+          size={100}
+          color={'rgb(29, 161, 242)'}
+          loading
+        />
+        <style jsx>{`
+          .wrapper {
+            width: 100%;
+            padding: 80px 0;
+            display: flex;
+            justify-content: center;
+          }
+        `}</style>
+      </div>
+    );
+  }
+
+  return <TreeNode node={tree} isRoot />;
+};
+
+const Index = () => {
+  const [userInput, setUserInput] = React.useState('');
+  const [tweet, setTweet] = React.useState('');
 
   return (
     <div>
@@ -45,9 +77,9 @@ const Index = () => {
             setTweet(id);
           }}
         />
-        {tree && (
+        {tweet && (
           <section>
-            <TreeNode node={tree} isRoot />
+            <TweetLoader tweet={tweet} />
           </section>
         )}
       </main>
