@@ -57,7 +57,6 @@ const LinkCard: React.FC<LinkCardProps> = ({ tweet }) => {
           display: flex;
           border-radius: 14px;
           border: 1px solid rgb(204, 214, 221);
-          text-decoration: none;
           margin-top: 10px;
         }
 

@@ -72,21 +72,28 @@ const TweetComponent: React.FC<TweetProps> = ({
       })}
     >
       {!isRoot && (
-        <img
-          className="author-image"
-          src={tweet.user.profile_image_url_https}
-        />
+        <a href={`https://twitter.com/${tweet.user.screen_name}`}>
+          <img
+            className="author-image"
+            src={tweet.user.profile_image_url_https}
+          />
+        </a>
       )}
 
       <Wrapper>
         <div className="author">
           {isRoot && (
-            <img
-              className="author-image"
-              src={tweet.user.profile_image_url_https}
-            />
+            <a href={`https://twitter.com/${tweet.user.screen_name}`}>
+              <img
+                className="author-image"
+                src={tweet.user.profile_image_url_https}
+              />
+            </a>
           )}
-          <div className="author-details">
+          <a
+            className="author-details"
+            href={`https://twitter.com/${tweet.user.screen_name}`}
+          >
             <span className="name">
               {tweet.user.name}
               {tweet.user.verified && <VerifiedCheckMark />}
@@ -102,7 +109,7 @@ const TweetComponent: React.FC<TweetProps> = ({
                 }
               </React.Fragment>
             )}
-          </div>
+          </a>
         </div>
         <p
           className="full-text"
@@ -174,6 +181,11 @@ const TweetComponent: React.FC<TweetProps> = ({
           margin-right: 10px;
           margin-top: 8px;
           padding-right: 3px;
+        }
+
+        .author-details {
+          text-decoration: none;
+          color: inherit;
         }
 
         .time-since-posted,
