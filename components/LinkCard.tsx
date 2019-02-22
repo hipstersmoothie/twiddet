@@ -74,8 +74,8 @@ const LinkCard: React.FC<LinkCardProps> = ({ tweet }) => {
 
         .image {
           border-right: 1px solid rgb(204, 214, 221);
-          min-width: 125px;
-          min-height: 125px;
+          max-width: 150px;
+          max-height: 150px;
           display: flex;
           align-items: center;
           justify-content: center;

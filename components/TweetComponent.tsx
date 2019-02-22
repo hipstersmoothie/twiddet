@@ -2,6 +2,7 @@ import * as React from 'react';
 import linkifyUrls from 'linkify-urls';
 import makeClass from 'classnames';
 import { format } from 'timeago.js';
+import Lightbox from 'react-image-lightbox';
 
 import { Tweet } from 'types/twitter';
 import LinkCard from './LinkCard';
@@ -24,6 +25,39 @@ const VerifiedCheckMark = () => (
   </svg>
 );
 
+interface ControlledLightboxProps {
+  open: boolean;
+  images: string[];
+  closeLightbox(): void;
+  photo: number;
+  setPhoto: React.Dispatch<React.SetStateAction<number>>;
+}
+
+const ControlledLightbox: React.FC<ControlledLightboxProps> = ({
+  open,
+  images,
+  closeLightbox,
+  photo,
+  setPhoto
+}) => {
+  if (!open) {
+    return null;
+  }
+
+  return (
+    <Lightbox
+      mainSrc={images[photo]}
+      nextSrc={images[(photo + 1) % images.length]}
+      prevSrc={images[(photo + images.length - 1) % images.length]}
+      onCloseRequest={closeLightbox}
+      onMovePrevRequest={() =>
+        setPhoto((photo + images.length - 1) % images.length)
+      }
+      onMoveNextRequest={() => setPhoto((photo + 1) % images.length)}
+    />
+  );
+};
+
 interface TweetProps {
   isRoot?: boolean;
   tweet: Tweet;
@@ -40,7 +74,10 @@ const TweetComponent: React.FC<TweetProps> = ({
   setCollapsed
 }) => {
   let displayText = tweet.full_text;
+  const [lightboxOpen, setLightboxOpen] = React.useState(false);
+  const [photo, setPhoto] = React.useState(0);
   const media: React.ReactNode[] = [];
+  const images: string[] = [];
   const Wrapper = isRoot
     ? React.Fragment
     : ({ children }: { children: React.ReactNode }) => (
@@ -48,26 +85,45 @@ const TweetComponent: React.FC<TweetProps> = ({
       );
 
   if (tweet.entities && tweet.entities.media) {
-    tweet.entities.media.map(entity => {
+    tweet.entities.media.map((entity, index) => {
       if (entity.type === 'photo') {
+        images.push(entity.media_url);
+
         media.push(
           <img
+            onClick={e => {
+              setLightboxOpen(true);
+              setPhoto(index);
+              e.stopPropagation();
+            }}
             key={entity.id_str}
             src={entity.media_url}
-            height={entity.sizes.small.h}
-            width={entity.sizes.small.w}
+            height={entity.sizes.small.h / 2}
+            width={entity.sizes.small.w / 2}
           />
         );
+
+        displayText =
+          displayText.substr(0, entity.indices[0]) +
+          displayText.substr(entity.indices[1], displayText.length);
       }
-      displayText =
-        displayText.substr(0, entity.indices[0]) +
-        displayText.substr(entity.indices[1], displayText.length);
     });
   }
 
+  console.log(lightboxOpen);
+
   return (
     <div
-      onClick={() => setCollapsed(!collapsed)}
+      onClick={e => {
+        if (
+          e.target instanceof Element &&
+          e.target.className.includes('ril-')
+        ) {
+          return;
+        }
+
+        setCollapsed(!collapsed);
+      }}
       className={makeClass('tweet', {
         'root-tweet': isRoot,
         'sub-tweet': !isRoot,
@@ -125,7 +181,20 @@ const TweetComponent: React.FC<TweetProps> = ({
             )
           }}
         />
-        <div className="attached-media">{media}</div>
+        <div
+          className={makeClass('attached-media', {
+            multiple: images.length > 1
+          })}
+        >
+          {media}
+          <ControlledLightbox
+            photo={photo}
+            setPhoto={setPhoto}
+            images={images}
+            open={lightboxOpen}
+            closeLightbox={() => setLightboxOpen(false)}
+          />
+        </div>
         <LinkCard tweet={tweet} />
         {tweet.quote && (
           <TweetComponent
@@ -174,7 +243,6 @@ const TweetComponent: React.FC<TweetProps> = ({
           border-bottom: 2px solid rgb(237, 239, 241);
           border-radius: 0px;
           padding-bottom: 10px;
-          width: calc(100% - 50px);
         }
 
         .name {
@@ -217,11 +285,20 @@ const TweetComponent: React.FC<TweetProps> = ({
         .attached-media {
           border-radius: 15px;
           overflow: hidden;
+          width: fit-content;
           display: grid;
+
+          &.multiple {
+            width: 100%;
+            grid-template-columns: repeat(auto-fill, minmax(25%, 1fr));
+            grid-gap: 5px;
+            margin: 20px 0;
+          }
 
           :global(img) {
             height: auto;
-            width: 100%;
+            max-width: 100%;
+            cursor: pointer;
           }
         }
 

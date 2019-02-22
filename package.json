@@ -22,6 +22,7 @@
     "query-string": "^6.2.0",
     "react": "^16.8.1",
     "react-dom": "^16.8.1",
+    "react-image-lightbox": "^5.1.0",
     "react-spinners": "^0.5.1",
     "react-treeview": "^0.4.7",
     "timeago.js": "^4.0.0-beta.2"

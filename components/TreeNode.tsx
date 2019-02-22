@@ -47,7 +47,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node, isRoot }) => {
           opacity: 0;
         }
 
-        :global(.tree-view_children) {
+        .tree-node :global(.tree-view_children) {
           margin-left: 40px;
         }
 
