@@ -298,6 +298,7 @@ const TweetComponent: React.FC<TweetProps> = ({
           :global(img) {
             height: auto;
             max-width: 100%;
+            width: 100%;
             cursor: pointer;
           }
         }
