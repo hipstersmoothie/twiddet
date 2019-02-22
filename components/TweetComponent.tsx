@@ -25,263 +25,124 @@ const VerifiedCheckMark = () => (
   </svg>
 );
 
-interface ControlledLightboxProps {
-  open: boolean;
-  images: string[];
-  closeLightbox(): void;
-  photo: number;
-  setPhoto: React.Dispatch<React.SetStateAction<number>>;
-}
-
-const ControlledLightbox: React.FC<ControlledLightboxProps> = ({
-  open,
-  images,
-  closeLightbox,
-  photo,
-  setPhoto
-}) => {
-  if (!open) {
-    return null;
-  }
-
-  return (
-    <Lightbox
-      mainSrc={images[photo]}
-      nextSrc={images[(photo + 1) % images.length]}
-      prevSrc={images[(photo + images.length - 1) % images.length]}
-      onCloseRequest={closeLightbox}
-      onMovePrevRequest={() =>
-        setPhoto((photo + images.length - 1) % images.length)
-      }
-      onMoveNextRequest={() => setPhoto((photo + 1) % images.length)}
-    />
-  );
-};
-
-interface TweetProps {
-  isRoot?: boolean;
+interface AuthorImageProps {
   tweet: Tweet;
-  collapsed?: boolean;
-  isQuote?: boolean;
-  setCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const TweetComponent: React.FC<TweetProps> = ({
-  isRoot,
-  tweet,
-  isQuote,
-  collapsed,
-  setCollapsed
-}) => {
-  let displayText = tweet.full_text;
+const AuthorImage: React.FC<AuthorImageProps> = ({ tweet }) => (
+  <a href={`https://twitter.com/${tweet.user.screen_name}`}>
+    <img className="author-image" src={tweet.user.profile_image_url_https} />
+
+    <style jsx>{`
+      .author-image {
+        border-radius: 50%;
+        min-width: 50px;
+        width: 50px;
+        min-height: 50px;
+        height: 50px;
+        margin-right: 10px;
+        margin-top: 8px;
+        padding-right: 3px;
+      }
+    `}</style>
+  </a>
+);
+
+interface TimeSinceProps {
+  tweet: Tweet;
+  isRoot?: boolean;
+}
+
+const TimeSince: React.FC<TimeSinceProps> = ({ tweet, isRoot }) => (
+  <span className={makeClass('time-since-posted', { isRoot })}>
+    {format(tweet.created_at, 'en_US')}
+
+    <style jsx>{`
+      .time-since-posted {
+        font-size: 15px;
+        color: rgb(136, 153, 166);
+      }
+
+      .root {
+        padding-top: 10px;
+        display: block;
+      }
+    `}</style>
+  </span>
+);
+
+interface StatsProps {
+  tweet: Tweet;
+}
+
+const Stats: React.FC<StatsProps> = ({ tweet }) => (
+  <p className="media-stats">
+    <Count count={tweet.reply_count} icon="far fa-comment" />
+    <Count count={tweet.retweet_count} icon="fas fa-retweet" />
+    <Count count={tweet.favorite_count} icon="far fa-heart" />
+
+    <style jsx>{`
+      .media-stats {
+        display: flex;
+        margin-top: 10px;
+        border-bottom: 2px solid rgb(237, 239, 241);
+        border-radius: 0px;
+        padding-bottom: 10px;
+      }
+    `}</style>
+  </p>
+);
+
+interface Image {
+  src: string;
+  height: number;
+  width: number;
+}
+
+interface AttachedMediaProps {
+  images: Image[];
+}
+
+const AttachedMedia: React.FC<AttachedMediaProps> = ({ images }) => {
   const [lightboxOpen, setLightboxOpen] = React.useState(false);
   const [photo, setPhoto] = React.useState(0);
-  const media: React.ReactNode[] = [];
-  const images: string[] = [];
-  const Wrapper = isRoot
-    ? React.Fragment
-    : ({ children }: { children: React.ReactNode }) => (
-        <div className="content">{children}</div>
-      );
 
-  if (tweet.entities && tweet.entities.media) {
-    tweet.entities.media.map((entity, index) => {
-      if (entity.type === 'photo') {
-        images.push(entity.media_url);
-
-        media.push(
-          <img
-            onClick={e => {
-              setLightboxOpen(true);
-              setPhoto(index);
-              e.stopPropagation();
-            }}
-            key={entity.id_str}
-            src={entity.media_url}
-            height={entity.sizes.small.h / 2}
-            width={entity.sizes.small.w / 2}
-          />
-        );
-
-        displayText =
-          displayText.substr(0, entity.indices[0]) +
-          displayText.substr(entity.indices[1], displayText.length);
-      }
-    });
-  }
-
-  console.log(lightboxOpen);
+  const media = images.map((image, index) => (
+    <img
+      onClick={e => {
+        setLightboxOpen(true);
+        setPhoto(index);
+        e.stopPropagation();
+      }}
+      key={image.src}
+      src={image.src}
+      height={image.height / 2}
+      width={image.width / 2}
+    />
+  ));
 
   return (
     <div
-      onClick={e => {
-        if (
-          e.target instanceof Element &&
-          e.target.className.includes('ril-')
-        ) {
-          return;
-        }
-
-        setCollapsed(!collapsed);
-      }}
-      className={makeClass('tweet', {
-        'root-tweet': isRoot,
-        'sub-tweet': !isRoot,
-        'quote-tweet': isQuote
+      className={makeClass('attached-media', {
+        multiple: images.length > 1
       })}
     >
-      {!isRoot && !isQuote && (
-        <a href={`https://twitter.com/${tweet.user.screen_name}`}>
-          <img
-            className="author-image"
-            src={tweet.user.profile_image_url_https}
-          />
-        </a>
+      {media}
+
+      {lightboxOpen && (
+        <Lightbox
+          mainSrc={images[photo].src}
+          nextSrc={images[(photo + 1) % images.length].src}
+          prevSrc={images[(photo + images.length - 1) % images.length].src}
+          onCloseRequest={() => setLightboxOpen(false)}
+          onMovePrevRequest={() =>
+            setPhoto((photo + images.length - 1) % images.length)
+          }
+          onMoveNextRequest={() => setPhoto((photo + 1) % images.length)}
+        />
       )}
 
-      <Wrapper>
-        <div className="author">
-          {isRoot && (
-            <a href={`https://twitter.com/${tweet.user.screen_name}`}>
-              <img
-                className="author-image"
-                src={tweet.user.profile_image_url_https}
-              />
-            </a>
-          )}
-          <a
-            className="author-details"
-            href={`https://twitter.com/${tweet.user.screen_name}`}
-          >
-            <span className="name">
-              {tweet.user.name}
-              {tweet.user.verified && <VerifiedCheckMark />}
-            </span>{' '}
-            <span className="screen-name">@{tweet.user.screen_name}</span>
-            {!isRoot && (
-              <React.Fragment>
-                <span className="time-spacer">·</span>
-                {
-                  <span className="time-since-posted">
-                    {format(tweet.created_at, 'en_US')}
-                  </span>
-                }
-              </React.Fragment>
-            )}
-          </a>
-        </div>
-        <p
-          className="full-text"
-          dangerouslySetInnerHTML={{
-            __html: linkifyUrls(
-              displayText.slice(tweet.display_text_range[0]),
-              {
-                type: 'string'
-              }
-            )
-          }}
-        />
-        <div
-          className={makeClass('attached-media', {
-            multiple: images.length > 1
-          })}
-        >
-          {media}
-          <ControlledLightbox
-            photo={photo}
-            setPhoto={setPhoto}
-            images={images}
-            open={lightboxOpen}
-            closeLightbox={() => setLightboxOpen(false)}
-          />
-        </div>
-        <LinkCard tweet={tweet} />
-        {tweet.quote && (
-          <TweetComponent
-            isQuote
-            tweet={tweet.quote}
-            setCollapsed={setCollapsed}
-          />
-        )}
-        {isRoot && (
-          <span className="time-since-posted">
-            {format(tweet.created_at, 'en_US')}
-          </span>
-        )}
-        <p className="media-stats">
-          <Count count={tweet.reply_count} icon="far fa-comment" />
-          <Count count={tweet.retweet_count} icon="fas fa-retweet" />
-          <Count count={tweet.favorite_count} icon="far fa-heart" />
-        </p>
-      </Wrapper>
-
       <style jsx>{`
-        .tweet {
-          padding-bottom: 15px;
-          width: 100%;
-        }
-
-        .quote-tweet {
-          border-radius: 14px;
-          border: 1px solid rgb(204, 214, 221);
-          padding: 15px;
-          width: fit-content;
-          margin: 20px 0;
-        }
-
-        .sub-tweet {
-          display: flex;
-        }
-
-        :global(.content) {
-          width: 100%;
-        }
-
-        .media-stats {
-          display: flex;
-          margin-top: 10px;
-          border-bottom: 2px solid rgb(237, 239, 241);
-          border-radius: 0px;
-          padding-bottom: 10px;
-        }
-
-        .name {
-          display: inline-flex;
-          align-items: center;
-        }
-
-        .name,
-        .screen-name,
-        .full-text,
-        .time-since-posted {
-          font-size: 15px;
-        }
-
-        .time-spacer {
-          padding: 0 5px;
-        }
-
-        .author-image {
-          border-radius: 50%;
-          min-width: 50px;
-          width: 50px;
-          min-height: 50px;
-          height: 50px;
-          margin-right: 10px;
-          margin-top: 8px;
-          padding-right: 3px;
-        }
-
-        .author-details {
-          text-decoration: none;
-          color: inherit;
-        }
-
-        .time-since-posted,
-        .screen-name {
-          color: rgb(136, 153, 166);
-        }
-
         .attached-media {
           border-radius: 15px;
           overflow: hidden;
@@ -302,6 +163,192 @@ const TweetComponent: React.FC<TweetProps> = ({
             cursor: pointer;
           }
         }
+      `}</style>
+    </div>
+  );
+};
+
+interface AuthorProps {
+  tweet: Tweet;
+  isRoot?: boolean;
+}
+
+const Author: React.FC<AuthorProps> = ({ isRoot, tweet }) => (
+  <div className={makeClass('author', { isRoot })}>
+    {isRoot && <AuthorImage tweet={tweet} />}
+
+    <a
+      className="author-details"
+      href={`https://twitter.com/${tweet.user.screen_name}`}
+    >
+      <span className="name">
+        {tweet.user.name}
+        {tweet.user.verified && <VerifiedCheckMark />}
+      </span>{' '}
+      <span className="screen-name">@{tweet.user.screen_name}</span>
+      {!isRoot && (
+        <React.Fragment>
+          <span className="time-spacer">·</span>
+          <TimeSince tweet={tweet} />
+        </React.Fragment>
+      )}
+    </a>
+
+    <style jsx>{`
+      .name,
+      .screen-name {
+        font-size: 15px;
+      }
+
+      .time-spacer {
+        padding: 0 5px;
+      }
+
+      .author-details {
+        text-decoration: none;
+        color: inherit;
+      }
+
+      .screen-name {
+        color: rgb(136, 153, 166);
+      }
+
+      .name {
+        display: inline-flex;
+        align-items: center;
+      }
+
+      .isRoot {
+        &.author {
+          display: flex;
+          align-items: center;
+          padding-bottom: 15px;
+          margin-left: -50px;
+        }
+
+        .screen-name {
+          color: rgb(136, 153, 166);
+          line-height: 20px;
+        }
+
+        .author-details {
+          display: inline-flex;
+          flex-direction: column;
+        }
+      }
+    `}</style>
+  </div>
+);
+
+interface TweetProps {
+  isRoot?: boolean;
+  tweet: Tweet;
+  collapsed?: boolean;
+  isQuote?: boolean;
+  setCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const TweetComponent: React.FC<TweetProps> = ({
+  isRoot,
+  tweet,
+  isQuote,
+  collapsed,
+  setCollapsed
+}) => {
+  const images: Image[] = [];
+  let displayText = tweet.full_text;
+
+  if (tweet.entities && tweet.entities.media) {
+    tweet.entities.media.map(entity => {
+      if (entity.type === 'photo') {
+        images.push({
+          src: entity.media_url,
+          height: entity.sizes.small.h / 2,
+          width: entity.sizes.small.w / 2
+        });
+
+        displayText =
+          displayText.substr(0, entity.indices[0]) +
+          displayText.substr(entity.indices[1], displayText.length);
+      }
+    });
+  }
+
+  return (
+    <div
+      onClick={e => {
+        if (
+          e.target instanceof Element &&
+          e.target.className.includes('ril-')
+        ) {
+          return;
+        }
+
+        setCollapsed(!collapsed);
+      }}
+      className={makeClass('tweet', {
+        'root-tweet': isRoot,
+        'sub-tweet': !isRoot,
+        'quote-tweet': isQuote
+      })}
+    >
+      {!isRoot && !isQuote && <AuthorImage tweet={tweet} />}
+
+      <div className="content">
+        <Author isRoot={isRoot} tweet={tweet} />
+
+        <p
+          className="full-text"
+          dangerouslySetInnerHTML={{
+            __html: linkifyUrls(
+              displayText.slice(tweet.display_text_range[0]),
+              {
+                type: 'string'
+              }
+            )
+          }}
+        />
+
+        <AttachedMedia images={images} />
+        <LinkCard tweet={tweet} />
+
+        {tweet.quote && (
+          <TweetComponent
+            isQuote
+            tweet={tweet.quote}
+            setCollapsed={setCollapsed}
+          />
+        )}
+
+        {isRoot && <TimeSince tweet={tweet} isRoot />}
+        <Stats tweet={tweet} />
+      </div>
+
+      <style jsx>{`
+        .tweet {
+          padding-bottom: 15px;
+          width: 100%;
+        }
+
+        .quote-tweet {
+          border-radius: 14px;
+          border: 1px solid rgb(204, 214, 221);
+          padding: 15px;
+          width: fit-content;
+          margin: 20px 0;
+        }
+
+        .sub-tweet {
+          display: flex;
+        }
+
+        .content {
+          width: 100%;
+        }
+
+        .full-text {
+          font-size: 15px;
+        }
 
         .root-tweet {
           .full-text {
@@ -309,28 +356,8 @@ const TweetComponent: React.FC<TweetProps> = ({
             padding-bottom: 15px;
           }
 
-          .time-since-posted {
-            padding-top: 10px;
-            display: block;
-          }
-
-          > :global(*):not(.author):not(.author-details) {
+          > :global(*) {
             margin-left: 50px;
-          }
-
-          .author {
-            display: flex;
-            padding-bottom: 15px;
-          }
-
-          .screen-name {
-            color: rgb(136, 153, 166);
-            line-height: 12px;
-          }
-
-          .author-details {
-            display: flex;
-            flex-direction: column;
           }
         }
       `}</style>
