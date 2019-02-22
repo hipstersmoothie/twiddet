@@ -72,6 +72,12 @@ const useQueryString = () => {
     });
   };
 
+  Router.onRouteChangeComplete = (url: string) => {
+    const update = q.parse(url.replace('/', ''));
+    const newQueryString = { ...queryString, ...update };
+    setQueryString(newQueryString);
+  };
+
   return [queryString, updateQueryString] as [
     q.OutputParams,
     (update: q.InputParams) => void
@@ -82,6 +88,11 @@ const Index = () => {
   const [queryString, setQueryString] = useQueryString();
   const [userInput, setUserInput] = React.useState(queryString.tweet as string);
   const [tweet, setTweet] = React.useState(queryString.tweet as string);
+
+  React.useEffect(() => {
+    setUserInput(queryString.tweet as string);
+    setTweet(queryString.tweet as string);
+  }, [queryString]);
 
   return (
     <div className="background">

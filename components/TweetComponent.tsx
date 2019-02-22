@@ -7,6 +7,7 @@ import Lightbox from 'react-image-lightbox';
 import { Tweet } from 'types/twitter';
 import LinkCard from './LinkCard';
 import Count from './Count';
+import Router from 'next/router';
 
 const VerifiedCheckMark = () => (
   <svg viewBox="0 0 24 24" aria-label="Verified account" className="checkmark">
@@ -240,6 +241,45 @@ const Author: React.FC<AuthorProps> = ({ isRoot, tweet }) => (
   </div>
 );
 
+interface ShowMoreProps {
+  tweet: Tweet;
+}
+
+const ShowMore: React.FC<ShowMoreProps> = ({ tweet }) => (
+  <div className="show-more">
+    <button
+      onClick={e => {
+        Router.push(`/?tweet=${tweet.id_str}`);
+        e.stopPropagation();
+      }}
+    >
+      Show Conversation
+    </button>
+
+    <style jsx>{`
+      .show-more {
+        width: 100%;
+        text-align: center;
+        padding: 15px 0 5px;
+
+        button {
+          border-radius: 9999px;
+          padding: 10px 20px;
+          background: lightgrey;
+          font-size: 16px;
+          border: none;
+          cursor: pointer;
+
+          &:focus {
+            outline: none;
+            box-shadow: 0 0 2px 2px rgb(29, 161, 242);
+          }
+        }
+      }
+    `}</style>
+  </div>
+);
+
 interface TweetProps {
   isRoot?: boolean;
   tweet: Tweet;
@@ -336,6 +376,8 @@ const TweetComponent: React.FC<TweetProps> = ({
 
         {isRoot && <TimeSince tweet={tweet} isRoot />}
         <Stats tweet={tweet} />
+
+        {isQuote && <ShowMore tweet={tweet} />}
       </div>
 
       <style jsx>{`
