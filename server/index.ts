@@ -25,7 +25,6 @@ async function startServer() {
     server.use(bodyParser.json());
     // enable all CORS requests
     server.use(cors());
-    // log HTTP requests
 
     server.use('/api', twitter);
     server.get('*', (req, res) => handle(req, res));
