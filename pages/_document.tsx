@@ -2,24 +2,16 @@ import Document, {
   Head,
   Main,
   NextScript,
-  NextDocumentContext,
   RenderPageResponse
 } from 'next/document';
-import { ServerStyleSheet } from 'styled-components';
-
+import flush from 'styled-jsx/server';
 interface MyDocumentProps extends RenderPageResponse {
   styleTags: React.ReactNode;
 }
 
 export default class MyDocument extends Document<MyDocumentProps> {
-  static getInitialProps({ renderPage }: NextDocumentContext) {
-    const sheet = new ServerStyleSheet();
-    const page = renderPage(App => props =>
-      sheet.collectStyles(<App {...props} />)
-    );
-    const styleTags = sheet.getStyleElement();
-
-    return { ...page, styleTags };
+  static getInitialProps() {
+    return { styles: flush() };
   }
 
   render() {
@@ -28,7 +20,7 @@ export default class MyDocument extends Document<MyDocumentProps> {
     return (
       <html>
         <Head>
-          {this.props.styleTags}
+          {this.props.styles}
           <meta name="viewport" content="width=device-width, initial-scale=1" />
           <link
             rel="stylesheet"

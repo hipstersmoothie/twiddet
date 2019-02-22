@@ -3,7 +3,6 @@ import Head from 'next/head';
 import React from 'react';
 
 import 'react-treeview/react-treeview.css';
-import './index.css';
 
 export default class MyApp extends App {
   static async getInitialProps({ Component, ctx }: NextAppContext) {
