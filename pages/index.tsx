@@ -1,6 +1,9 @@
 import * as React from 'react';
+import Router from 'next/router';
 import fetch from 'isomorphic-unfetch';
 import { ClipLoader } from 'react-spinners';
+import * as q from 'query-string';
+import { prefixURL } from 'next-prefixed';
 
 import { TweetTree } from 'types/twitter';
 import TreeNode from '../components/TreeNode';
@@ -52,9 +55,33 @@ const TweetLoader: React.FC<TweetLoaderProps> = ({ tweet }) => {
   return <TreeNode node={tree} isRoot />;
 };
 
+const useQueryString = () => {
+  const [queryString, setQueryString] = React.useState(
+    q.parse(window.location.search)
+  );
+
+  const updateQueryString = (update: q.InputParams) => {
+    const newQueryString = { ...queryString, ...update };
+    setQueryString(newQueryString);
+
+    const query = q.stringify(newQueryString);
+    const newPath = `/?${query}`;
+
+    Router.replace(newPath, prefixURL(newPath), {
+      shallow: true
+    });
+  };
+
+  return [queryString, updateQueryString] as [
+    q.OutputParams,
+    (update: q.InputParams) => void
+  ];
+};
+
 const Index = () => {
-  const [userInput, setUserInput] = React.useState('');
-  const [tweet, setTweet] = React.useState('');
+  const [queryString, setQueryString] = useQueryString();
+  const [userInput, setUserInput] = React.useState(queryString.tweet as string);
+  const [tweet, setTweet] = React.useState(queryString.tweet as string);
 
   return (
     <div className="background">
@@ -75,6 +102,7 @@ const Index = () => {
             }
 
             setTweet(id);
+            setQueryString({ tweet: id });
           }}
         />
       </div>

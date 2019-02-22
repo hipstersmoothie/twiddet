@@ -4,6 +4,7 @@
   "dependencies": {
     "@flatten/array": "^1.1.7",
     "@types/classnames": "^2.2.7",
+    "@types/query-string": "^6.2.0",
     "@zeit/next-css": "^1.0.1",
     "@zeit/next-typescript": "^1.1.1",
     "body-parser": "^1.18.3",
@@ -17,6 +18,8 @@
     "linkify-urls": "^3.0.0",
     "merge-deep": "^3.0.2",
     "next": "^8.0.1",
+    "next-prefixed": "^0.0.5",
+    "query-string": "^6.2.0",
     "react": "^16.8.1",
     "react-dom": "^16.8.1",
     "react-spinners": "^0.5.1",

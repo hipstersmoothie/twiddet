@@ -2,8 +2,14 @@ const withTypescript = require('@zeit/next-typescript');
 const withCSS = require('@zeit/next-css');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
+const debug = process.env.NODE_ENV !== 'production';
+const assetPrefix = debug ? '' : '/twiddet';
+
 module.exports = withCSS(
   withTypescript({
+    publicRuntimeConfig: {
+      assetPrefix
+    },
     webpack(config, options) {
       // Do not run type checking twice:
       if (options.isServer) {
