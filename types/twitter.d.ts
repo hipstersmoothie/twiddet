@@ -38,7 +38,7 @@ export interface Media {
 }
 
 export interface Entities {
-  url: UrlMap;
+  urls: Url[];
   hashtags: Hashtag[];
   media: Media[];
   description: Description;
@@ -148,10 +148,6 @@ export interface Tweet {
   is_quote_status: boolean;
   quoted_status_id_str: string;
   quote?: Tweet;
-}
-
-export interface UrlMap {
-  urls: Url[];
 }
 
 export interface Description {}

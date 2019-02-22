@@ -256,7 +256,7 @@ const TweetComponent: React.FC<TweetProps> = ({
   setCollapsed
 }) => {
   const images: Image[] = [];
-  let displayText = tweet.full_text;
+  const urlsToRemove: [number, number][] = [];
 
   if (tweet.entities && tweet.entities.media) {
     tweet.entities.media.map(entity => {
@@ -267,12 +267,26 @@ const TweetComponent: React.FC<TweetProps> = ({
           width: entity.sizes.small.w / 2
         });
 
-        displayText =
-          displayText.substr(0, entity.indices[0]) +
-          displayText.substr(entity.indices[1], displayText.length);
+        urlsToRemove.push(entity.indices as [number, number]);
       }
     });
   }
+
+  if (tweet.entities && tweet.quoted_status_id_str) {
+    tweet.entities.urls.map(url => {
+      const id = url.expanded_url.match(
+        /https:\/\/mobile\.twitter\.com\/\S+\/status\/(\d+)/
+      );
+
+      if (id && id[1] === tweet.quoted_status_id_str) {
+        urlsToRemove.push(url.indices as [number, number]);
+      }
+    });
+  }
+
+  const displayText = urlsToRemove
+    .sort((a, b) => (a[1] > b[1] ? 1 : -1))
+    .reduceRight((text, indices) => text.slice(0, indices[0]), tweet.full_text);
 
   return (
     <div
@@ -343,7 +357,7 @@ const TweetComponent: React.FC<TweetProps> = ({
         }
 
         .content {
-          width: 100%;
+          width: calc(100% - 50px);
         }
 
         .full-text {
