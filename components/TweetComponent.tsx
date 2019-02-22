@@ -114,9 +114,12 @@ const TweetComponent: React.FC<TweetProps> = ({
         <p
           className="full-text"
           dangerouslySetInnerHTML={{
-            __html: linkifyUrls(displayText, {
-              type: 'string'
-            })
+            __html: linkifyUrls(
+              displayText.slice(tweet.display_text_range[0]),
+              {
+                type: 'string'
+              }
+            )
           }}
         />
         <div className="attached-media">{media}</div>
