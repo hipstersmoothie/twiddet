@@ -1,4 +1,5 @@
 import * as React from 'react';
+import Head from 'next/head';
 import Router from 'next/router';
 import fetch from 'isomorphic-unfetch';
 import { ClipLoader } from 'react-spinners';
@@ -52,7 +53,14 @@ const TweetLoader: React.FC<TweetLoaderProps> = ({ tweet }) => {
     );
   }
 
-  return <TreeNode node={tree} isRoot />;
+  return (
+    <React.Fragment>
+      <Head>
+        <title>Twiddet - {tree.module.user.name}</title>
+      </Head>
+      <TreeNode node={tree} isRoot />
+    </React.Fragment>
+  );
 };
 
 const useQueryString = () => {
@@ -154,6 +162,7 @@ const Index = () => {
           font-size: 20px;
           height: 35px;
           text-align: center;
+          border: 2px solid #b3a8a854;
         }
 
         section {
