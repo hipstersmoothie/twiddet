@@ -18,7 +18,8 @@ export default class MyDocument extends Document<MyDocumentProps> {
   render() {
     const cssFiles = [
       'https://unpkg.com/normalize.css@5.0.0/normalize.css',
-      'https://unpkg.com/react-image-lightbox@5.1.0/style.css'
+      'https://unpkg.com/react-image-lightbox@5.1.0/style.css',
+      'https://unpkg.com/react-treeview@0.4.7/react-treeview.css'
     ];
 
     return (
