@@ -1,5 +1,7 @@
 # twiddet
 
+[![CircleCI](https://circleci.com/gh/hipstersmoothie/twiddet.svg?style=svg)](https://circleci.com/gh/hipstersmoothie/twiddet)
+
 A website that enables you to read twitter conversations like reddit posts. All tweets and replies are rendered as foldable trees.
 
 ## Development Setup
