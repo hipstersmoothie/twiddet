@@ -13,14 +13,14 @@ const Count: React.FC<CountProps> = ({ count, icon }) => {
 
       <style jsx>{`
         .count {
-          padding: 0 10px;
           font-size: 14px;
+          padding: 0 10px;
         }
 
         .icon {
+          align-items: center;
           color: rgb(101, 119, 134);
           display: flex;
-          align-items: center;
         }
       `}</style>
     </span>

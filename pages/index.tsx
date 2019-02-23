@@ -43,10 +43,10 @@ const TweetLoader: React.FC<TweetLoaderProps> = ({ tweet }) => {
         />
         <style jsx>{`
           .wrapper {
-            width: 100%;
-            padding: 80px 0;
             display: flex;
             justify-content: center;
+            padding: 80px 0;
+            width: 100%;
           }
         `}</style>
       </div>
@@ -136,50 +136,50 @@ const Index = () => {
       <style jsx>{`
         .background {
           background-color: rgb(230, 236, 240);
-          min-height: 100vh;
-          height: 100%;
           font-size: 20px;
           font-weight: 200;
+          height: 100%;
           line-height: 30px;
+          min-height: 100vh;
           text-align: center;
         }
 
         main {
-          width: 50%;
           margin: 0 auto;
           min-width: 750px;
+          width: 50%;
         }
 
         label {
-          padding-bottom: 25px;
           display: block;
+          padding-bottom: 25px;
         }
 
         input {
-          min-width: 400px;
+          border: 2px solid #b3a8a854;
           border-radius: 9999px;
-          text-indent: 20px;
           font-size: 20px;
           height: 35px;
+          min-width: 400px;
           text-align: center;
-          border: 2px solid #b3a8a854;
+          text-indent: 20px;
         }
 
         section {
-          text-align: left;
           background: white;
-          padding-top: 20px;
-          padding-right: 30px;
-          padding-bottom: 40px;
           margin-bottom: 80px;
+          padding-bottom: 40px;
+          padding-right: 30px;
+          padding-top: 20px;
+          text-align: left;
         }
 
         .hero {
           background: rgb(29, 161, 242);
           color: white;
-          padding: 100px;
           font-size: 26px;
           margin-bottom: 25px;
+          padding: 100px;
         }
       `}</style>
     </div>

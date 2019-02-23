@@ -1,0 +1,18 @@
+{
+  "extends": ["stylelint-config-recommended", "stylelint-config-css-modules"],
+  "plugins": ["stylelint-order"],
+
+  "processors": [
+    [
+      "@mapbox/stylelint-processor-arbitrary-tags",
+      {
+        "startTag": "\\s*<style jsx>{`",
+        "endTag": "\\s*`}</style>"
+      }
+    ]
+  ],
+  "rules": {
+    "order/properties-alphabetical-order": true,
+    "no-empty-source": null
+  }
+}

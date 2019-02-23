@@ -15,11 +15,11 @@ const NoLinkImage = () => (
     </svg>
     <style jsx>{`
       .no-image {
-        min-width: 150px;
-        min-height: 150px;
-        display: flex;
         align-items: center;
+        display: flex;
         justify-content: center;
+        min-height: 150px;
+        min-width: 150px;
       }
     `}</style>
   </div>
@@ -69,29 +69,29 @@ const LinkCard: React.FC<LinkCardProps> = ({ tweet }) => {
         }
 
         .link-card {
-          display: flex;
-          border-radius: 14px;
           border: 1px solid rgb(204, 214, 221);
+          border-radius: 14px;
+          display: flex;
           margin-top: 10px;
           text-decoration: none;
         }
 
         .title {
-          font-weight: 400;
           color: rgb(20, 23, 26);
+          font-weight: 400;
         }
 
         .link,
         .description {
+          color: rgb(101, 119, 134);
           font-weight: 400;
           line-height: 1.4;
-          color: rgb(101, 119, 134);
         }
 
         .image {
           border-right: 1px solid rgb(204, 214, 221);
-          max-width: 150px;
           max-height: 150px;
+          max-width: 150px;
         }
 
         .content {

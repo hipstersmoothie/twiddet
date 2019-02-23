@@ -26,9 +26,9 @@ const Connector: React.FC<ConnectorProps> = ({ node, collapsed, onClick }) => {
           display: block;
           left: 35px;
           position: absolute;
+          top: 67px;
           width: 0;
           z-index: 1;
-          top: 67px;
         }
 
         .connector.collapsed {

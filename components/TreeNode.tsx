@@ -39,25 +39,25 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node, isRoot }) => {
 
       <style jsx>{`
         .tree-node {
-          position: relative;
           overflow: visible;
+          position: relative;
         }
 
         :global(.tree-view_arrow) {
           opacity: 0;
         }
 
-        .tree-node :global(.tree-view_children) {
-          margin-left: 40px;
-        }
-
         :global(.tree-view_item) {
-          display: flex;
           align-items: baseline;
+          display: flex;
         }
 
         :global(.tree-view_item) > :global(*) {
           display: inline;
+        }
+
+        .tree-node :global(.tree-view_children) {
+          margin-left: 40px;
         }
       `}</style>
     </div>
