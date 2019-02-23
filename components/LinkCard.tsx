@@ -30,6 +30,10 @@ const LinkCard: React.FC<LinkCardProps> = ({ tweet }) => {
     return null;
   }
 
+  if (tweet.card.name.includes('poll')) {
+    return <div>Polls currently unsupported 😢</div>;
+  }
+
   return (
     <a
       href={tweet.card.binding_values.card_url.string_value}
