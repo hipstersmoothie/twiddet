@@ -2,6 +2,7 @@ import express from 'express';
 import fetch from 'isomorphic-unfetch';
 import TreeConverter from './tree-converter';
 
+// eslint-disable-next-line new-cap
 const router = express.Router();
 
 function setUpTwitter(token: string) {
@@ -10,7 +11,7 @@ function setUpTwitter(token: string) {
       'Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA',
     'x-guest-token': token
   };
-  const memo = new Map<string, any>();
+  const memo = new Map<string, object>();
 
   return {
     get: async (tweet: string, cursor?: string) => {

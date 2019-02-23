@@ -36,10 +36,10 @@ const TweetLoader: React.FC<TweetLoaderProps> = ({ tweet }) => {
     return (
       <div className="wrapper">
         <ClipLoader
-          sizeUnit={'px'}
-          size={100}
-          color={'rgb(29, 161, 242)'}
           loading
+          color="rgb(29, 161, 242)"
+          size={100}
+          sizeUnit="px"
         />
         <style jsx>{`
           .wrapper {
@@ -54,12 +54,12 @@ const TweetLoader: React.FC<TweetLoaderProps> = ({ tweet }) => {
   }
 
   return (
-    <React.Fragment>
+    <>
       <Head>
         <title>Twiddet - {tree.module.user.name}</title>
       </Head>
-      <TreeNode node={tree} isRoot />
-    </React.Fragment>
+      <TreeNode isRoot node={tree} />
+    </>
   );
 };
 

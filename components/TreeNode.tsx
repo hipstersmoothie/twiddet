@@ -18,7 +18,6 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node, isRoot }) => {
   return (
     <div className="tree-node">
       <TreeView
-        onClick={toggleCollapsed}
         treeViewClassName={makeClass({ 'no-border': isRoot })}
         nodeLabel={
           <TweetComponent
@@ -30,6 +29,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node, isRoot }) => {
         }
         collapsed={collapsed}
         style={node.children.length > 0 ? {} : { opacity: 0 }}
+        onClick={toggleCollapsed}
       >
         {node.children.map(child => (
           <TreeNode key={child.module.id_str} node={child} />

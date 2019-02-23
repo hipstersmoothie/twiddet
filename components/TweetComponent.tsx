@@ -110,15 +110,15 @@ const AttachedMedia: React.FC<AttachedMediaProps> = ({ images }) => {
 
   const media = images.map((image, index) => (
     <img
+      key={image.src}
+      src={image.src}
+      height={image.height / 2}
+      width={image.width / 2}
       onClick={e => {
         setLightboxOpen(true);
         setPhoto(index);
         e.stopPropagation();
       }}
-      key={image.src}
-      src={image.src}
-      height={image.height / 2}
-      width={image.width / 2}
     />
   ));
 
@@ -188,10 +188,10 @@ const Author: React.FC<AuthorProps> = ({ isRoot, tweet }) => (
       </span>{' '}
       <span className="screen-name">@{tweet.user.screen_name}</span>
       {!isRoot && (
-        <React.Fragment>
+        <>
           <span className="time-spacer">·</span>
           <TimeSince tweet={tweet} />
-        </React.Fragment>
+        </>
       )}
     </a>
 
@@ -248,6 +248,7 @@ interface ShowMoreProps {
 const ShowMore: React.FC<ShowMoreProps> = ({ tweet }) => (
   <div className="show-more">
     <button
+      type="button"
       onClick={e => {
         Router.push(`/?tweet=${tweet.id_str}`);
         e.stopPropagation();
@@ -299,7 +300,7 @@ const TweetComponent: React.FC<TweetProps> = ({
   const urlsToRemove: [number, number][] = [];
 
   if (tweet.entities && tweet.entities.media) {
-    tweet.entities.media.map(entity => {
+    tweet.entities.media.forEach(entity => {
       if (entity.type === 'photo') {
         images.push({
           src: entity.media_url,
@@ -313,7 +314,7 @@ const TweetComponent: React.FC<TweetProps> = ({
   }
 
   if (tweet.entities && tweet.quoted_status_id_str) {
-    tweet.entities.urls.map(url => {
+    tweet.entities.urls.forEach(url => {
       const id = url.expanded_url.match(
         /https:\/\/mobile\.twitter\.com\/\S+\/status\/(\d+)/
       );
@@ -330,6 +331,11 @@ const TweetComponent: React.FC<TweetProps> = ({
 
   return (
     <div
+      className={makeClass('tweet', {
+        'root-tweet': isRoot,
+        'sub-tweet': !isRoot,
+        'quote-tweet': isQuote
+      })}
       onClick={e => {
         if (
           e.target instanceof Element &&
@@ -340,11 +346,6 @@ const TweetComponent: React.FC<TweetProps> = ({
 
         setCollapsed(!collapsed);
       }}
-      className={makeClass('tweet', {
-        'root-tweet': isRoot,
-        'sub-tweet': !isRoot,
-        'quote-tweet': isQuote
-      })}
     >
       {!isRoot && !isQuote && <AuthorImage tweet={tweet} />}
 
@@ -374,7 +375,7 @@ const TweetComponent: React.FC<TweetProps> = ({
           />
         )}
 
-        {isRoot && <TimeSince tweet={tweet} isRoot />}
+        {isRoot && <TimeSince isRoot tweet={tweet} />}
         <Stats tweet={tweet} />
 
         {isQuote && <ShowMore tweet={tweet} />}

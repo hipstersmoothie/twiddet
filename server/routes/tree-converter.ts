@@ -12,17 +12,17 @@ import merge from 'deepmerge';
 import flatten from '@flatten/array';
 
 const isTweet = (content: ConversationContent): content is TweetReference => {
-  return content.hasOwnProperty('tweet');
+  return Boolean((content as TweetReference).tweet);
 };
 
 const isOperation = (content: DataEntry | Operation): content is Operation => {
-  return content.hasOwnProperty('operation');
+  return Boolean((content as Operation).operation);
 };
 
 const isConversation = (
   content: ConversationContent
 ): content is ConversationThread => {
-  return content.hasOwnProperty('conversationThread');
+  return Boolean((content as ConversationThread).conversationThread);
 };
 
 type FetchTweet = (id: string, cursor?: string) => Promise<Conversation>;
@@ -35,7 +35,7 @@ export default class TreeConverter {
   private tree: TweetTree;
   private processedReplies: Set<string>;
 
-  constructor(
+  public constructor(
     conversation: Conversation,
     rootTweetId: string,
     getTweet: FetchTweet
@@ -45,7 +45,8 @@ export default class TreeConverter {
     this.getTweet = getTweet;
     this.tweetMap = new Map<string, TweetTree>();
     this.processedReplies = new Set<string>();
-    this.tree = {} as TweetTree;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    this.tree = {} as any;
   }
 
   public async convert() {
@@ -69,8 +70,8 @@ export default class TreeConverter {
     // Now we have all top level replies
 
     // 2. make tree
-    fullConversation.timeline.instructions.map(instr => {
-      instr.addEntries.entries.map(entry => {
+    fullConversation.timeline.instructions.forEach(instr => {
+      instr.addEntries.entries.forEach(entry => {
         if (isOperation(entry.content)) {
           return;
         }
@@ -87,7 +88,7 @@ export default class TreeConverter {
   }
 
   private makeTreeNode(conversation: Conversation, tweet: Tweet): TweetTree {
-    let quote: Tweet | undefined = undefined;
+    let quote: Tweet | undefined;
 
     if (tweet.is_quote_status) {
       quote = conversation.globalObjects.tweets[tweet.quoted_status_id_str];
@@ -125,7 +126,6 @@ export default class TreeConverter {
           const subTweet = await this.getTweet(tweet.id_str);
           this.processedReplies.add(tweet.id_str);
 
-          // TODO: figure out quoted tweets
           if (this.tweetMap.get(tweet.in_reply_to_status_id_str)) {
             console.log('GETTING', tweet);
             await this.convertConversation(subTweet, tweet.id_str);
@@ -140,8 +140,7 @@ export default class TreeConverter {
     conversation: Conversation,
     tweetId: string
   ): Promise<Conversation[]> {
-    let instruction = conversation.timeline.instructions[0];
-
+    const instruction = conversation.timeline.instructions[0];
     const cursors = await Promise.all(
       instruction.addEntries.entries.map(async entry => {
         if (isOperation(entry.content)) {
@@ -151,7 +150,7 @@ export default class TreeConverter {
     );
 
     const moreConversation = cursors.filter(
-      (x: Conversation | undefined): x is Conversation => !!x
+      (x: Conversation | undefined): x is Conversation => Boolean(x)
     );
 
     const sub = await Promise.all(
@@ -183,10 +182,7 @@ export default class TreeConverter {
         return this.tree;
       }
 
-      if (!this.tree.module) {
-        console.log('MODE ROOT NODE');
-        this.tree = this.makeTreeNode(conversation, tweet);
-      } else {
+      if (this.tree.module) {
         const parent = this.findParent(this.tree, tweet);
 
         if (parent) {
@@ -195,22 +191,30 @@ export default class TreeConverter {
         } else {
           console.log('COULD NOT FIND PARENT');
         }
+      } else {
+        console.log('MODE ROOT NODE');
+        this.tree = this.makeTreeNode(conversation, tweet);
       }
     } else if (isConversation(content)) {
       let parent: TweetTree;
 
-      content.conversationThread.conversationComponents.map(tweetTimeline => {
-        const tweet =
-          conversation.globalObjects.tweets[
-            tweetTimeline.conversationTweetComponent.tweet.id
-          ];
+      content.conversationThread.conversationComponents.forEach(
+        tweetTimeline => {
+          const tweet =
+            conversation.globalObjects.tweets[
+              tweetTimeline.conversationTweetComponent.tweet.id
+            ];
 
-        if (!tweet) {
-          console.log('TWEET NOT FOUND IN CONVERSATION');
-          return;
-        }
+          if (!tweet) {
+            console.log('TWEET NOT FOUND IN CONVERSATION');
+            return;
+          }
 
-        if (!this.tweetMap.get(tweet.id_str)) {
+          if (this.tweetMap.get(tweet.id_str)) {
+            console.log('TWEET ALREADY ADDED');
+            return;
+          }
+
           if (!parent) {
             parent = this.findParent(this.tree, tweet);
           }
@@ -229,10 +233,8 @@ export default class TreeConverter {
             this.tree.children.push(newNode);
             parent = newNode;
           }
-        } else {
-          console.log('TWEET ALREADY ADDED');
         }
-      });
+      );
     }
 
     return this.tree;

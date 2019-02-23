@@ -31,7 +31,8 @@
     "debug": "TS_NODE_PROJECT=tsconfig.server.json node --inspect -r ts-node/register server",
     "build": "next build && tsc --build tsconfig.server.json",
     "start": "cross-env NODE_ENV=production node dist/server/index.js",
-    "clean": "rm -rf dist && rm -rf .next"
+    "clean": "rm -rf dist && rm -rf .next",
+    "lint": "eslint --ext .ts --ext .tsx components/** pages/** server/** "
   },
   "devDependencies": {
     "@types/cors": "^2.8.4",
@@ -42,7 +43,12 @@
     "@types/next": "^8.0.1",
     "@types/node": "^11.9.4",
     "@types/styled-jsx": "^2.2.8",
+    "@typescript-eslint/eslint-plugin": "^1.4.0",
+    "@typescript-eslint/parser": "^1.4.0",
     "cross-env": "^5.2.0",
+    "eslint-config-prettier": "^4.0.0",
+    "eslint-config-xo-react": "^0.18.0",
+    "eslint-plugin-react": "^7.12.4",
     "fork-ts-checker-webpack-plugin": "^0.5.2",
     "node-sass": "^4.11.0",
     "nodemon": "^1.18.10",

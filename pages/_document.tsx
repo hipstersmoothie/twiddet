@@ -1,3 +1,4 @@
+import React from 'react';
 import Document, {
   Head,
   Main,
@@ -33,8 +34,8 @@ export default class MyDocument extends Document<MyDocumentProps> {
             integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr"
             crossOrigin="anonymous"
           />
-          {cssFiles.map((c, i) => (
-            <link key={i} href={c} rel="stylesheet" />
+          {cssFiles.map(link => (
+            <link key={link} href={link} rel="stylesheet" />
           ))}
           <style>{`
             * {
