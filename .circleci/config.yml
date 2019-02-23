@@ -1,0 +1,70 @@
+version: 2
+
+defaults: &defaults
+  working_directory: ~/twiddet
+  docker:
+    - image: circleci/node:latest-browsers
+
+jobs:
+  install:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            # Find a cache corresponding to this specific package.json checksum
+            # when this file is changed, this key will fail
+            - twiddet-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ checksum ".circleci/config.yml" }}
+            - twiddet-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - twiddet-{{ .Branch }}
+            # Find the most recent cache used from any branch
+            - twiddet-master
+            - twiddet-
+      - run:
+          name: Install Dependencies
+          command: yarn install --frozen-lockfile
+      - save_cache:
+          key: twiddet-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ checksum ".circleci/config.yml" }}
+          paths:
+            - node_modules
+            - ~/.cache/yarn
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+
+  lint:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/twiddet
+      - run:
+          name: Lint
+          command: yarn lint
+
+  build:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/twiddet
+      - run:
+          name: Build
+          command: yarn build
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - install
+
+      - lint:
+          requires:
+            - install
+
+      - build:
+          requires:
+            - install
