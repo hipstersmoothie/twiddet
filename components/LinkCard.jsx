@@ -1,0 +1,93 @@
+"use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __importStar(require("react"));
+const NoLinkImage = () => (<div className="no-image">
+    <svg style={{ width: 35 }} viewBox="0 0 24 24">
+      <g>
+        <path d="M14 11.25H6a.75.75 0 0 0 0 1.5h8a.75.75 0 0 0 0-1.5zm0-4H6a.75.75 0 0 0 0 1.5h8a.75.75 0 0 0 0-1.5zm-3.25 8H6a.75.75 0 0 0 0 1.5h4.75a.75.75 0 0 0 0-1.5z"/>
+        <path d="M21.5 11.25h-3.25v-7C18.25 3.01 17.24 2 16 2H4C2.76 2 1.75 3.01 1.75 4.25v15.5C1.75 20.99 2.76 22 4 22h15.5a2.752 2.752 0 0 0 2.75-2.75V12a.75.75 0 0 0-.75-.75zm-18.25 8.5V4.25c0-.413.337-.75.75-.75h12c.413 0 .75.337.75.75v15c0 .452.12.873.315 1.25H4a.752.752 0 0 1-.75-.75zm16.25.75c-.69 0-1.25-.56-1.25-1.25v-6.5h2.5v6.5c0 .69-.56 1.25-1.25 1.25z"/>
+      </g>
+    </svg>
+    <style jsx>{`
+      .no-image {
+        align-items: center;
+        display: flex;
+        justify-content: center;
+        min-height: 150px;
+        min-width: 150px;
+      }
+    `}</style>
+  </div>);
+const LinkCard = ({ tweet }) => {
+    if (!tweet.card) {
+        return null;
+    }
+    if (tweet.card.name.includes('poll')) {
+        return <div>Polls currently unsupported 😢</div>;
+    }
+    return (<a href={tweet.card.binding_values.card_url.string_value} className="link-card">
+      {tweet.card.binding_values.thumbnail_image ? (<img className="image" src={tweet.card.binding_values.thumbnail_image.image_value.url} height={tweet.card.binding_values.thumbnail_image.image_value.height} width={tweet.card.binding_values.thumbnail_image.image_value.width}/>) : (<div className="image">
+          <NoLinkImage />
+        </div>)}
+      <div className="content">
+        <p className="title">{tweet.card.binding_values.title.string_value}</p>
+        <p className="description">
+          {tweet.card.binding_values.description.string_value}
+        </p>
+        <p className="link">
+          {tweet.card.binding_values.vanity_url.string_value}
+        </p>
+      </div>
+
+      <style jsx>{`
+        .title,
+        .link,
+        .description {
+          font-size: 15px;
+        }
+
+        .link-card {
+          border: 1px solid rgb(204, 214, 221);
+          border-radius: 14px;
+          display: flex;
+          margin-top: 10px;
+          text-decoration: none;
+        }
+
+        .title {
+          color: rgb(20, 23, 26);
+          font-weight: 400;
+        }
+
+        .link,
+        .description {
+          color: rgb(101, 119, 134);
+          font-weight: 400;
+          line-height: 1.4;
+        }
+
+        .image {
+          border-right: 1px solid rgb(204, 214, 221);
+          max-height: 150px;
+          max-width: 150px;
+        }
+
+        .content {
+          padding: 10px;
+        }
+
+        .content :global(*) {
+          text-decoration: none;
+        }
+      `}</style>
+    </a>);
+};
+exports.default = LinkCard;
+//# sourceMappingURL=LinkCard.jsx.map
