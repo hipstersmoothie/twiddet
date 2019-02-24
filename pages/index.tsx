@@ -4,13 +4,12 @@ import Router from 'next/router';
 import fetch from 'isomorphic-unfetch';
 import { ClipLoader } from 'react-spinners';
 import * as q from 'query-string';
-import { prefixURL } from 'next-prefixed';
 
 import { TweetTree } from 'types/twitter';
 import TreeNode from '../components/TreeNode';
 
 async function fetchTweet(tweet: string): Promise<TweetTree> {
-  const result = await fetch(`http://localhost:3000/api/tweet/${tweet}`);
+  const result = await fetch(`${window.location.origin}/api/tweet/${tweet}`);
   const body: TweetTree = await result.json();
 
   return body;
@@ -75,7 +74,7 @@ const useQueryString = () => {
     const query = q.stringify(newQueryString);
     const newPath = `/?${query}`;
 
-    Router.replace(newPath, prefixURL(newPath), {
+    Router.replace(newPath, newPath, {
       shallow: true
     });
   };

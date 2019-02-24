@@ -49,6 +49,7 @@ async function getGuestToken() {
   const body = await result.text();
   const match = body.match(/gt=(\d+)/);
 
+  console.log(body);
   if (!match) {
     throw new Error('No token found!');
   }
