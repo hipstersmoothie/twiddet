@@ -36,30 +36,31 @@ function setUpTwitter(token: string) {
   };
 }
 
-async function getGuestToken() {
-  const result = await fetch(
-    'https://mobile.twitter.com/ericclemmons/status/1098673740156530688',
-    {
-      headers: {
-        'User-Agent':
-          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.81 Safari/537.36'
-      }
-    }
-  );
-  const body = await result.text();
-  const match = body.match(/gt=(\d+)/);
+// async function getGuestToken() {
+//   const result = await fetch(
+//     'https://mobile.twitter.com/ericclemmons/status/1098673740156530688',
+//     {
+//       headers: {
+//         'User-Agent':
+//           'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.81 Safari/537.36'
+//       }
+//     }
+//   );
+//   const body = await result.text();
+//   const match = body.match(/gt=(\d+)/);
 
-  console.log(body);
-  if (!match) {
-    throw new Error('No token found!');
-  }
+//   console.log(body);
+//   if (!match) {
+//     throw new Error('No token found!');
+//   }
 
-  return match[1];
-}
+//   return match[1];
+// }
 
 router.get('/tweet/:tweet', async (req, res) => {
   try {
-    const token = await getGuestToken();
+    const tokenResponse = await fetch('http://76.167.236.46:3000/api/token');
+    const token = await tokenResponse.text();
     const twitter = setUpTwitter(token);
     const json = await twitter.get(req.params.tweet);
     const treeConverter = new TreeConverter(
