@@ -38,6 +38,9 @@ const LinkCard: React.FC<LinkCardProps> = ({ tweet }) => {
     <a
       href={tweet.card.binding_values.card_url.string_value}
       className="link-card"
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={e => e.stopPropagation()}
     >
       {tweet.card.binding_values.thumbnail_image ? (
         <img
@@ -56,9 +59,11 @@ const LinkCard: React.FC<LinkCardProps> = ({ tweet }) => {
         <p className="description">
           {tweet.card.binding_values.description.string_value}
         </p>
-        <p className="link">
-          {tweet.card.binding_values.vanity_url.string_value}
-        </p>
+        {tweet.card.binding_values.vanity_url && (
+          <p className="link">
+            {tweet.card.binding_values.vanity_url.string_value}
+          </p>
+        )}
       </div>
 
       <style jsx>{`
