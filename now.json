@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "name": "twiddet",
+  "builds": [
+    { "src": "dist/website/**/*.*", "use": "@now/static" },
+    { "src": "dist/server/*.js", "use": "@now/node" }
+  ],
+  "routes": [
+    { "src": "/api/tweet/(.*)", "dest": "dist/server/tweet.js?tweet=$1" },
+    {
+      "src": "/_next/(.*)",
+      "dest": "dist/website/_next/$1"
+    },
+    { "src": "/(.*)", "dest": "dist/website/index.html" }
+  ]
+}

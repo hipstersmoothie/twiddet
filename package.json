@@ -30,15 +30,15 @@
   },
   "scripts": {
     "dev": "nodemon",
-    "debug": "TS_NODE_PROJECT=tsconfig.server.json node --inspect -r ts-node/register server",
     "build": "next build && tsc --build tsconfig.server.json",
     "heroku-postbuild": "yarn && yarn build",
     "start": "cross-env NODE_ENV=production node dist/server/index.js",
+    "now-build": "next build && next export -o dist/website",
     "clean": "rm -rf dist && rm -rf .next",
     "lint": "yarn lint:js && yarn lint:css",
     "lint:js": "eslint --ext .ts --ext .tsx components/** pages/** server/**",
     "lint:css": "stylelint components/*.tsx pages/*.tsx",
-    "deploy": "push-dir --dir=dist --branch=release"
+    "deploy": "now"
   },
   "devDependencies": {
     "@babel/core": "^7.3.3",
@@ -62,13 +62,12 @@
     "fork-ts-checker-webpack-plugin": "^0.5.2",
     "node-sass": "^4.11.0",
     "nodemon": "^1.18.10",
-    "push-dir": "^0.4.1",
+    "now-lambda-runner": "^3.2.0",
     "styled-jsx-plugin-sass": "^1.0.0",
     "stylelint": "^9.10.1",
     "stylelint-config-css-modules": "^1.3.0",
     "stylelint-config-standard": "^18.2.0",
     "stylelint-order": "^2.0.0",
-    "ts-node": "^8.0.2",
     "tslint": "^5.12.1",
     "typescript": "^3.3.3",
     "webpack": "^4.29.5"
@@ -84,7 +83,7 @@
     "watch": [
       "server/**/*"
     ],
-    "exec": "ts-node -P tsconfig.server.json server",
+    "exec": "tsc --build tsconfig.server.json && now-lambda",
     "ext": "js json ts"
   }
 }

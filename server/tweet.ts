@@ -1,9 +1,22 @@
 import express from 'express';
 import fetch from 'isomorphic-unfetch';
-import TreeConverter from './tree-converter';
+import TreeConverter from '../utils/tree-converter';
+import * as bodyParser from 'body-parser';
+import cors from 'cors';
+import helmet from 'helmet';
+import * as env from 'dotenv';
+
+env.config();
 
 // eslint-disable-next-line new-cap
-const router = express.Router();
+const app = express();
+
+// enhance your app security with Helmet
+app.use(helmet());
+// use bodyParser to parse application/json content-type
+app.use(bodyParser.json());
+// enable all CORS requests
+app.use(cors());
 
 function setUpTwitter(token: string) {
   const headers = {
@@ -36,38 +49,13 @@ function setUpTwitter(token: string) {
   };
 }
 
-// async function getGuestToken() {
-//   const result = await fetch(
-//     'https://mobile.twitter.com/ericclemmons/status/1098673740156530688',
-//     {
-//       headers: {
-//         'User-Agent':
-//           'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.81 Safari/537.36'
-//       }
-//     }
-//   );
-//   const body = await result.text();
-//   const match = body.match(/gt=(\d+)/);
-
-//   console.log(body);
-//   if (!match) {
-//     throw new Error('No token found!');
-//   }
-
-//   return match[1];
-// }
-
-router.get('/tweet/:tweet', async (req, res) => {
+app.get('*', async (req, res) => {
   try {
     const tokenResponse = await fetch('http://76.167.236.46:3000/api/token');
     const token = await tokenResponse.text();
     const twitter = setUpTwitter(token);
-    const json = await twitter.get(req.params.tweet);
-    const treeConverter = new TreeConverter(
-      json,
-      req.params.tweet,
-      twitter.get
-    );
+    const json = await twitter.get(req.query.tweet);
+    const treeConverter = new TreeConverter(json, req.query.tweet, twitter.get);
     const tree = await treeConverter.convert();
 
     res.end(JSON.stringify(tree, null, 2));
@@ -76,4 +64,4 @@ router.get('/tweet/:tweet', async (req, res) => {
   }
 });
 
-export default router;
+export default app;
