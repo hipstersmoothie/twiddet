@@ -163,6 +163,7 @@ const TweetComponent: React.FC<TweetProps> = ({
 
         .full-text {
           font-size: 15px;
+          white-space: pre-wrap;
         }
 
         .root-tweet {
