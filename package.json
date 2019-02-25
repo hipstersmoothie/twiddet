@@ -16,6 +16,7 @@
     "dotenv": "^6.2.0",
     "express": "^4.16.4",
     "helmet": "^3.15.1",
+    "httpie": "^1.1.0",
     "isomorphic-unfetch": "^3.0.0",
     "linkify-urls": "^3.0.0",
     "merge-deep": "^3.0.2",
@@ -30,15 +31,12 @@
   },
   "scripts": {
     "dev": "nodemon",
-    "build": "next build && tsc --build tsconfig.server.json",
-    "heroku-postbuild": "yarn && yarn build",
-    "start": "cross-env NODE_ENV=production node dist/server/index.js",
-    "now-build": "next build && next export -o dist/website",
+    "build": "next build && next export -o dist/website && tsc --build tsconfig.server.json",
     "clean": "rm -rf dist && rm -rf .next",
     "lint": "yarn lint:js && yarn lint:css",
     "lint:js": "eslint --ext .ts --ext .tsx components/** pages/** server/**",
     "lint:css": "stylelint components/*.tsx pages/*.tsx",
-    "deploy": "now"
+    "deploy": "yarn build && now"
   },
   "devDependencies": {
     "@babel/core": "^7.3.3",
@@ -83,7 +81,7 @@
     "watch": [
       "server/**/*"
     ],
-    "exec": "tsc --build tsconfig.server.json && now-lambda",
+    "exec": "yarn build && now-lambda",
     "ext": "js json ts"
   }
 }
