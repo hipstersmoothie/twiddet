@@ -25,6 +25,18 @@ export interface Sizes {
   small: Size;
 }
 
+export interface VideoVariant {
+  content_type: string;
+  url: string;
+  bitrate: number;
+}
+
+export interface VideoInfo {
+  aspect_ratio: [number, number];
+  duration_millis: number;
+  variants: VideoVariant[];
+}
+
 export interface Media {
   id_str: string;
   indices: number[];
@@ -35,12 +47,33 @@ export interface Media {
   expanded_url: string;
   type: string;
   sizes: Sizes;
+  video_info?: VideoInfo;
+}
+
+export interface ExtendedMedia {
+  id_str: string;
+  indices: number[];
+  media_url: string;
+  media_url_https: string;
+  url: string;
+  display_url: string;
+  expanded_url: string;
+  type: string;
+  sizes: Sizes;
+  video_info?: VideoInfo;
 }
 
 export interface Entities {
   urls: Url[];
   hashtags: Hashtag[];
   media: Media[];
+  description: Description;
+}
+
+export interface ExtendedEntities {
+  urls: Url[];
+  hashtags: Hashtag[];
+  media: ExtendedMedia[];
   description: Description;
 }
 
@@ -131,6 +164,7 @@ export interface Tweet {
   full_text: string;
   display_text_range: number[];
   entities: Entities;
+  extended_entities: ExtendedEntities;
   source: string;
   in_reply_to_status_id_str: string;
   in_reply_to_user_id_str: string;

@@ -10,37 +10,49 @@ interface AttachedMediaProps {
 const AttachedMedia: React.FC<AttachedMediaProps> = ({ tweet }) => {
   const [lightboxOpen, setLightboxOpen] = React.useState(false);
   const [photo, setPhoto] = React.useState(0);
-  const images = tweet.entities.media || [];
+  const images =
+    (tweet.extended_entities && tweet.extended_entities.media) ||
+    tweet.entities.media ||
+    [];
 
   if (images.length === 0) {
     return null;
   }
 
-  const media = images.map((image, index) =>
-    image.media_url.includes('video_thumb') ? (
-      // @ts-ignore
-      <video
-        key={image.media_url}
-        autoPlay
-        playsInline
-        loop
-        preload="auto"
-        typeOf="video/mp4"
-        src={image.media_url
-          .replace(
-            'http://pbs.twimg.com/tweet_video_thumb/',
-            'https://video.twimg.com/tweet_video/'
-          )
-          .replace('.jpg', '.mp4')}
-        height={image.sizes.small.h / 2}
-        width={image.sizes.small.w / 2}
-        onClick={e => {
-          setLightboxOpen(true);
-          setPhoto(index);
-          e.stopPropagation();
-        }}
-      />
-    ) : (
+  const media = images.map((image, index) => {
+    if (image.media_url.includes('video_thumb')) {
+      let videoUrl = image.media_url;
+
+      if (image.video_info) {
+        const variant = image.video_info.variants.find(
+          variant => variant.content_type === 'video/mp4'
+        );
+
+        if (variant) {
+          videoUrl = variant.url;
+        }
+      }
+
+      return (
+        <video
+          key={image.media_url}
+          autoPlay
+          playsInline
+          loop
+          preload="auto"
+          src={videoUrl}
+          height={image.sizes.small.h / 2}
+          width={image.sizes.small.w / 2}
+          onClick={e => {
+            setLightboxOpen(true);
+            setPhoto(index);
+            e.stopPropagation();
+          }}
+        />
+      );
+    }
+
+    return (
       <img
         key={image.media_url}
         src={image.media_url}
@@ -52,8 +64,8 @@ const AttachedMedia: React.FC<AttachedMediaProps> = ({ tweet }) => {
           e.stopPropagation();
         }}
       />
-    )
-  );
+    );
+  });
 
   return (
     <div
