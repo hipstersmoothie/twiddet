@@ -6,7 +6,7 @@ import { Tweet } from 'types/twitter';
 import LinkCard from './LinkCard';
 import Count from './Count';
 import Router from 'next/router';
-import AttachedMedia, { Image } from './AttachedMedia';
+import AttachedMedia from './AttachedMedia';
 import Author, { AuthorImage } from './Author';
 import TimeSince from './TimeSince';
 
@@ -87,39 +87,6 @@ const TweetComponent: React.FC<TweetProps> = ({
   collapsed,
   setCollapsed
 }) => {
-  const images: Image[] = [];
-  const urlsToRemove: [number, number][] = [];
-
-  if (tweet.entities && tweet.entities.media) {
-    tweet.entities.media.forEach(entity => {
-      if (entity.type === 'photo') {
-        images.push({
-          src: entity.media_url,
-          height: entity.sizes.small.h / 2,
-          width: entity.sizes.small.w / 2
-        });
-
-        urlsToRemove.push(entity.indices as [number, number]);
-      }
-    });
-  }
-
-  if (tweet.entities && tweet.quoted_status_id_str) {
-    tweet.entities.urls.forEach(url => {
-      const id = url.expanded_url.match(
-        /https:\/\/mobile\.twitter\.com\/\S+\/status\/(\d+)/
-      );
-
-      if (id && id[1] === tweet.quoted_status_id_str) {
-        urlsToRemove.push(url.indices as [number, number]);
-      }
-    });
-  }
-
-  const displayText = urlsToRemove
-    .sort((a, b) => (a[1] > b[1] ? 1 : -1))
-    .reduceRight((text, indices) => text.slice(0, indices[0]), tweet.full_text);
-
   return (
     <div
       className={makeClass('tweet', {
@@ -147,7 +114,7 @@ const TweetComponent: React.FC<TweetProps> = ({
           className="full-text"
           dangerouslySetInnerHTML={{
             __html: linkifyUrls(
-              displayText.slice(tweet.display_text_range[0]),
+              tweet.full_text.slice(...tweet.display_text_range),
               {
                 type: 'string'
               }
@@ -155,7 +122,7 @@ const TweetComponent: React.FC<TweetProps> = ({
           }}
         />
 
-        <AttachedMedia images={images} />
+        <AttachedMedia tweet={tweet} />
         <LinkCard tweet={tweet} />
 
         {tweet.quote && (

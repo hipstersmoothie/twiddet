@@ -5,7 +5,6 @@ import * as bodyParser from 'body-parser';
 import cors from 'cors';
 import helmet from 'helmet';
 import * as env from 'dotenv';
-import https from 'https';
 
 env.config();
 

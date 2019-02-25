@@ -27,3 +27,4 @@ Dev Tooling:
 - typescript - all the files
 - eslint - using the new typescript parser + plugin
 - stylelint - Lints the css in styled-jsx's `style` tags
+- now 2.0 - serverless lambdas :+1:
