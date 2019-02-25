@@ -1,9 +1,6 @@
 {
   "name": "twiddet",
   "version": "0.0.0",
-  "engines": {
-    "node": "8.11.x"
-  },
   "dependencies": {
     "@flatten/array": "^1.1.7",
     "@types/classnames": "^2.2.7",
