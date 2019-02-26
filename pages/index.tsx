@@ -145,6 +145,7 @@ const Index = () => {
           font-weight: 200;
           height: 100%;
           line-height: 30px;
+          padding-bottom: 80px;
           min-height: 100vh;
           text-align: center;
         }
@@ -172,7 +173,6 @@ const Index = () => {
 
         section {
           background: white;
-          margin-bottom: 80px;
           padding-bottom: 40px;
           padding-right: 30px;
           padding-top: 20px;
