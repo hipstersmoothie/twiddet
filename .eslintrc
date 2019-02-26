@@ -17,6 +17,8 @@
     "project": "./tsconfig.json"
   },
   "rules": {
+    "camelcase": 0,
+    "@typescript-eslint/camelcase": 0,
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
     "@typescript-eslint/indent": 0,

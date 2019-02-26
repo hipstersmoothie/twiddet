@@ -61,6 +61,7 @@ export interface ExtendedMedia {
   type: string;
   sizes: Sizes;
   video_info?: VideoInfo;
+  ext_alt_text: string;
 }
 
 export interface Entities {
@@ -162,6 +163,7 @@ export interface Tweet {
   created_at: string;
   id_str: string;
   full_text: string;
+  text: string;
   display_text_range: number[];
   entities: Entities;
   extended_entities: ExtendedEntities;

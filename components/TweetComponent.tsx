@@ -1,5 +1,4 @@
 import * as React from 'react';
-import linkifyUrls from 'linkify-urls';
 import makeClass from 'classnames';
 
 import { Tweet } from 'types/twitter';
@@ -113,12 +112,7 @@ const TweetComponent: React.FC<TweetProps> = ({
         <p
           className="full-text"
           dangerouslySetInnerHTML={{
-            __html: linkifyUrls(
-              tweet.full_text.slice(...tweet.display_text_range),
-              {
-                type: 'string'
-              }
-            )
+            __html: tweet.text
           }}
         />
 
