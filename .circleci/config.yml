@@ -42,14 +42,14 @@ jobs:
           name: Lint
           command: yarn lint
 
-  build:
+  type-check:
     <<: *defaults
     steps:
       - attach_workspace:
           at: ~/twiddet
       - run:
-          name: Build
-          command: yarn build
+          name: Check Types
+          command: yarn type-check
       - persist_to_workspace:
           root: .
           paths:
@@ -65,6 +65,6 @@ workflows:
           requires:
             - install
 
-      - build:
+      - type-check:
           requires:
             - install

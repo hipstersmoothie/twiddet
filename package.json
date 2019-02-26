@@ -26,6 +26,7 @@
     "dev": "run-p dev:*",
     "dev:browser": "next",
     "dev:server": "nodemon",
+    "type-check": "tsc",
     "now-build": "next build && tsc --build tsconfig.server.json",
     "clean": "rm -rf dist && rm -rf .next",
     "lint": "yarn lint:js && yarn lint:css",
