@@ -145,8 +145,8 @@ const Index = () => {
           font-weight: 200;
           height: 100%;
           line-height: 30px;
-          padding-bottom: 80px;
           min-height: 100vh;
+          padding-bottom: 80px;
           text-align: center;
         }
 
@@ -166,9 +166,9 @@ const Index = () => {
           border-radius: 9999px;
           font-size: 20px;
           height: 35px;
-          min-width: 400px;
           text-align: center;
           text-indent: 20px;
+          width: 100%;
         }
 
         section {
@@ -184,7 +184,17 @@ const Index = () => {
           color: white;
           font-size: 26px;
           margin-bottom: 25px;
-          padding: 100px;
+          padding: 50px;
+        }
+
+        @media (min-width: 767px) {
+          .hero {
+            padding: 100px;
+          }
+
+          input {
+            max-width: 400px;
+          }
         }
       `}</style>
     </div>
