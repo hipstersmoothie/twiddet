@@ -3,15 +3,11 @@
   "name": "twiddet",
   "alias": "twiddet.app",
   "builds": [
-    { "src": "dist/website/**/*.*", "use": "@now/static" },
-    { "src": "dist/server/*.js", "use": "@now/node" }
+    { "src": "next.config.js", "use": "@now/next" },
+    { "src": "server/*.ts", "use": "@now/node@canary" }
   ],
   "routes": [
-    { "src": "/api/tweet/(.*)", "dest": "dist/server/tweet.js?tweet=$1" },
-    {
-      "src": "/_next/(.*)",
-      "dest": "dist/website/_next/$1"
-    },
-    { "src": "/(.*)", "dest": "dist/website/index.html" }
+    { "src": "/api/tweet/(.*)", "dest": "server/tweet.ts?tweet=$1" },
+    { "src": "/(.*)", "dest": "/$1" }
   ]
 }
