@@ -19,28 +19,52 @@ const AttachedMedia: React.FC<AttachedMediaProps> = ({ tweet }) => {
     return null;
   }
 
-  const media = images.map((image, index) => {
-    if (image.media_url.includes('video_thumb')) {
-      let videoUrl = image.media_url;
+  const renderedImages = new Set<string>();
+  const media = images
+    .map((image, index) => {
+      if (image.media_url.includes('video_thumb')) {
+        let videoUrl = image.media_url;
 
-      if (image.video_info) {
-        const variant = image.video_info.variants.find(
-          variant => variant.content_type === 'video/mp4'
-        );
+        if (image.video_info) {
+          const variant = image.video_info.variants.find(
+            variant => variant.content_type === 'video/mp4'
+          );
 
-        if (variant) {
-          videoUrl = variant.url;
+          if (variant) {
+            videoUrl = variant.url;
+          }
         }
+
+        return (
+          <video
+            key={`${image.media_url}-${tweet.id_str}`}
+            autoPlay
+            playsInline
+            loop
+            preload="auto"
+            src={videoUrl}
+            height={image.sizes.small.h / 2}
+            width={image.sizes.small.w / 2}
+            onClick={e => {
+              setLightboxOpen(true);
+              setPhoto(index);
+              e.stopPropagation();
+            }}
+          />
+        );
       }
 
+      if (renderedImages.has(image.media_url)) {
+        return null;
+      }
+
+      renderedImages.add(image.media_url);
+
       return (
-        <video
-          key={image.media_url}
-          autoPlay
-          playsInline
-          loop
-          preload="auto"
-          src={videoUrl}
+        <img
+          key={`${image.media_url}-${tweet.id_str}`}
+          alt={image.ext_alt_text}
+          src={image.media_url}
           height={image.sizes.small.h / 2}
           width={image.sizes.small.w / 2}
           onClick={e => {
@@ -50,27 +74,13 @@ const AttachedMedia: React.FC<AttachedMediaProps> = ({ tweet }) => {
           }}
         />
       );
-    }
-
-    return (
-      <img
-        key={image.media_url}
-        src={image.media_url}
-        height={image.sizes.small.h / 2}
-        width={image.sizes.small.w / 2}
-        onClick={e => {
-          setLightboxOpen(true);
-          setPhoto(index);
-          e.stopPropagation();
-        }}
-      />
-    );
-  });
+    })
+    .filter(Boolean);
 
   return (
     <div
       className={makeClass('attached-media', {
-        multiple: images.length > 1
+        multiple: media.length > 1
       })}
     >
       {media}

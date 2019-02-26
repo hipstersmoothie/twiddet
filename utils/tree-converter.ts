@@ -8,6 +8,7 @@ import {
   ConversationThread,
   TweetTree
 } from 'types/twitter';
+import linkifyUrls from 'linkify-urls';
 import merge from 'deepmerge';
 import flatten from '@flatten/array';
 
@@ -102,7 +103,10 @@ export default class TreeConverter {
       module: {
         ...tweet,
         quote,
-        user: conversation.globalObjects.users[tweet.user_id_str]
+        user: conversation.globalObjects.users[tweet.user_id_str],
+        text: linkifyUrls(tweet.full_text.slice(...tweet.display_text_range), {
+          type: 'string'
+        })
       },
       children: []
     };
