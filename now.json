@@ -3,8 +3,8 @@
   "name": "twiddet",
   "alias": "twiddet.app",
   "builds": [
-    { "src": "next.config.js", "use": "@now/next" },
-    { "src": "server/*.ts", "use": "@now/node@canary" }
+    { "src": "server/*.ts", "use": "@now/node@canary" },
+    { "src": "next.config.js", "use": "@now/next" }
   ],
   "routes": [
     { "src": "/api/tweet/(.*)", "dest": "server/tweet.ts?tweet=$1" },
