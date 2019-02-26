@@ -1,9 +1,22 @@
 import express from 'express';
 import fetch from 'isomorphic-unfetch';
-import TreeConverter from './tree-converter';
+import TreeConverter from '../utils/tree-converter';
+import * as bodyParser from 'body-parser';
+import cors from 'cors';
+import helmet from 'helmet';
+import * as env from 'dotenv';
+
+env.config();
 
 // eslint-disable-next-line new-cap
-const router = express.Router();
+const app = express();
+
+// enhance your app security with Helmet
+app.use(helmet());
+// use bodyParser to parse application/json content-type
+app.use(bodyParser.json());
+// enable all CORS requests
+app.use(cors());
 
 function setUpTwitter(token: string) {
   const headers = {
@@ -37,6 +50,13 @@ function setUpTwitter(token: string) {
 }
 
 async function getGuestToken() {
+  if (process.env.NODE_ENV === 'production') {
+    const tokenResponse = await fetch('http://76.167.236.46:3000/api/token');
+    const token = await tokenResponse.text();
+
+    return token;
+  }
+
   const result = await fetch(
     'https://mobile.twitter.com/ericclemmons/status/1098673740156530688',
     {
@@ -49,7 +69,6 @@ async function getGuestToken() {
   const body = await result.text();
   const match = body.match(/gt=(\d+)/);
 
-  console.log(body);
   if (!match) {
     throw new Error('No token found!');
   }
@@ -57,16 +76,17 @@ async function getGuestToken() {
   return match[1];
 }
 
-router.get('/tweet/:tweet', async (req, res) => {
+app.get('*', async (req, res) => {
+  if (!req.query.tweet) {
+    res.send('No tweet id provided! Call this endpoint like: /?tweet=TWEET_ID');
+    return;
+  }
+
   try {
     const token = await getGuestToken();
     const twitter = setUpTwitter(token);
-    const json = await twitter.get(req.params.tweet);
-    const treeConverter = new TreeConverter(
-      json,
-      req.params.tweet,
-      twitter.get
-    );
+    const json = await twitter.get(req.query.tweet);
+    const treeConverter = new TreeConverter(json, req.query.tweet, twitter.get);
     const tree = await treeConverter.convert();
 
     res.end(JSON.stringify(tree, null, 2));
@@ -75,4 +95,16 @@ router.get('/tweet/:tweet', async (req, res) => {
   }
 });
 
-export default router;
+const PORT = process.env.PORT || 3001;
+
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, (err: Error) => {
+    if (err) {
+      throw err;
+    }
+
+    console.log(`> Ready on ${PORT}`);
+  });
+}
+
+export default app;

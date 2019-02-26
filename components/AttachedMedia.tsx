@@ -1,34 +1,71 @@
 import * as React from 'react';
 import makeClass from 'classnames';
 import Lightbox from 'react-image-lightbox';
-
-export interface Image {
-  src: string;
-  height: number;
-  width: number;
-}
+import { Tweet } from 'types/twitter';
 
 interface AttachedMediaProps {
-  images: Image[];
+  tweet: Tweet;
 }
 
-const AttachedMedia: React.FC<AttachedMediaProps> = ({ images }) => {
+const AttachedMedia: React.FC<AttachedMediaProps> = ({ tweet }) => {
   const [lightboxOpen, setLightboxOpen] = React.useState(false);
   const [photo, setPhoto] = React.useState(0);
+  const images =
+    (tweet.extended_entities && tweet.extended_entities.media) ||
+    tweet.entities.media ||
+    [];
 
-  const media = images.map((image, index) => (
-    <img
-      key={image.src}
-      src={image.src}
-      height={image.height / 2}
-      width={image.width / 2}
-      onClick={e => {
-        setLightboxOpen(true);
-        setPhoto(index);
-        e.stopPropagation();
-      }}
-    />
-  ));
+  if (images.length === 0) {
+    return null;
+  }
+
+  const media = images.map((image, index) => {
+    if (image.media_url.includes('video_thumb')) {
+      let videoUrl = image.media_url;
+
+      if (image.video_info) {
+        const variant = image.video_info.variants.find(
+          variant => variant.content_type === 'video/mp4'
+        );
+
+        if (variant) {
+          videoUrl = variant.url;
+        }
+      }
+
+      return (
+        <video
+          key={image.media_url}
+          autoPlay
+          playsInline
+          loop
+          preload="auto"
+          src={videoUrl}
+          height={image.sizes.small.h / 2}
+          width={image.sizes.small.w / 2}
+          onClick={e => {
+            setLightboxOpen(true);
+            setPhoto(index);
+            e.stopPropagation();
+          }}
+        />
+      );
+    }
+
+    return (
+      <img
+        key={image.media_url}
+        src={image.media_url}
+        height={image.sizes.small.h / 2}
+        width={image.sizes.small.w / 2}
+        onClick={e => {
+          setLightboxOpen(true);
+          setPhoto(index);
+          e.stopPropagation();
+        }}
+      />
+    );
+  });
 
   return (
     <div
@@ -40,9 +77,11 @@ const AttachedMedia: React.FC<AttachedMediaProps> = ({ images }) => {
 
       {lightboxOpen && (
         <Lightbox
-          mainSrc={images[photo].src}
-          nextSrc={images[(photo + 1) % images.length].src}
-          prevSrc={images[(photo + images.length - 1) % images.length].src}
+          mainSrc={images[photo].media_url}
+          nextSrc={images[(photo + 1) % images.length].media_url}
+          prevSrc={
+            images[(photo + images.length - 1) % images.length].media_url
+          }
           onCloseRequest={() => setLightboxOpen(false)}
           onMovePrevRequest={() =>
             setPhoto((photo + images.length - 1) % images.length)

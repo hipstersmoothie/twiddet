@@ -9,7 +9,13 @@ import { TweetTree } from 'types/twitter';
 import TreeNode from '../components/TreeNode';
 
 async function fetchTweet(tweet: string): Promise<TweetTree> {
-  const result = await fetch(`${window.location.origin}/api/tweet/${tweet}`);
+  let url = `${window.location.origin}/api/tweet/${tweet}`;
+
+  if (process.env.NODE_ENV !== 'production') {
+    url = `http://localhost:3001/?tweet=${tweet}`;
+  }
+
+  const result = await fetch(url);
   const body: TweetTree = await result.json();
 
   return body;
