@@ -25,10 +25,14 @@ interface AuthorImageProps {
 }
 
 export const AuthorImage: React.FC<AuthorImageProps> = ({ tweet }) => (
-  <a href={`https://twitter.com/${tweet.user.screen_name}`}>
+  <a href={`https://twitter.com/${tweet.user.screen_name}`} className="wrapper">
     <img className="author-image" src={tweet.user.profile_image_url_https} />
 
     <style jsx>{`
+      .wrapper {
+        align-self: flex-start;
+      }
+
       .author-image {
         border-radius: 50%;
         height: 50px;

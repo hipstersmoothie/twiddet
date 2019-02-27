@@ -5,7 +5,7 @@ import { TweetTree } from 'types/twitter';
 interface ConnectorProps {
   node: TweetTree;
   collapsed: boolean;
-  onClick(): void;
+  onClick(e: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
 }
 
 const Connector: React.FC<ConnectorProps> = ({ node, collapsed, onClick }) => {
