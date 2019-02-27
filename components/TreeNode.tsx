@@ -22,6 +22,8 @@ const useInitialHeight = <T extends HTMLElement>(ref: React.RefObject<T>) => {
     }
 
     setInitialHeight(ref.current.offsetHeight);
+    // We only want this to run once! Hence the empty deps array
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return initialHeight;
@@ -61,7 +63,14 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node, isRoot }) => {
 
       <animated.div
         ref={ref}
-        style={{ ...props, marginLeft: 40, maxHeight: 'fit-content' }}
+        style={{
+          ...props,
+          visibility: props.opacity.interpolate(o =>
+            o === 0 ? 'hidden' : 'visible'
+          ),
+          marginLeft: 40,
+          maxHeight: 'fit-content'
+        }}
       >
         {children}
       </animated.div>

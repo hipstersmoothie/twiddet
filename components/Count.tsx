@@ -3,13 +3,19 @@ import * as React from 'react';
 interface CountProps {
   count: number;
   icon: string;
+  type: string;
 }
 
-const Count: React.FC<CountProps> = ({ count, icon }) => {
+const Count: React.FC<CountProps> = ({ count, icon, type }) => {
   return (
     <span className="icon">
       <i className={icon} />
-      <span className="count">{count}</span>
+      <span className="count">
+        <span style={{ opacity: 0, position: 'absolute' }}>
+          {count} {type}
+        </span>
+        <span aria-hidden>{count}</span>
+      </span>
 
       <style jsx>{`
         .count {
