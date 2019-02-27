@@ -6,115 +6,78 @@ import { TweetTree } from 'types/twitter';
 import TweetComponent from '../components/TweetComponent';
 import Connector from '../components/Connector';
 
-interface TreeViewProps {
-  className: string;
-  indent?: number;
-  label: React.ReactNode;
-  collapsed: boolean;
-  onClick: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+interface TreeNodeProps {
+  node: TweetTree;
+  isRoot?: boolean;
 }
 
-const TreeView: React.FC<TreeViewProps> = ({
-  className,
-  onClick,
-  children,
-  label,
-  collapsed,
-  indent = 40
-}) => {
-  const [baseHeight, setBaseHeight] = React.useState<number | undefined>(
+const useInitialHeight = <T extends HTMLElement>(ref: React.RefObject<T>) => {
+  const [initialHeight, setInitialHeight] = React.useState<number | undefined>(
     undefined
   );
-  const ref = React.useRef<HTMLDivElement>(null);
-  const props = useSpring({ height: collapsed ? 0 : baseHeight || 'auto' });
 
   React.useEffect(() => {
     if (!ref.current) {
       return;
     }
 
-    setBaseHeight(ref.current.offsetHeight);
+    setInitialHeight(ref.current.offsetHeight);
   }, []);
 
-  return (
-    <div className={makeClass(className, 'wrapper')} onClick={onClick}>
-      <div className="label">{label}</div>
-
-      <div ref={ref} style={{ marginLeft: indent, overflow: 'hidden' }}>
-        {baseHeight === undefined ? (
-          children
-        ) : (
-          <animated.div style={{ ...props, maxHeight: 'fit-content' }}>
-            {children}
-          </animated.div>
-        )}
-      </div>
-
-      <style jsx>{`
-        .label {
-          align-items: baseline;
-          display: flex;
-          margin-left: 12px;
-        }
-      `}</style>
-    </div>
-  );
+  return initialHeight;
 };
-
-interface TreeNodeProps {
-  node: TweetTree;
-  isRoot?: boolean;
-}
 
 const TreeNode: React.FC<TreeNodeProps> = ({ node, isRoot }) => {
   const [collapsed, setCollapsed] = React.useState(false);
+  const ref = React.useRef<HTMLDivElement>(null);
+  const baseHeight = useInitialHeight(ref);
+  const props = useSpring({
+    height: collapsed ? 0 : baseHeight || 'auto',
+    opacity: collapsed ? 0 : 1
+  });
+
   const toggleCollapsed = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     setCollapsed(!collapsed);
     e.stopPropagation();
   };
 
+  const children = node.children.map(child => (
+    <TreeNode key={child.module.id_str} node={child} />
+  ));
+
   return (
-    <div className="tree-node">
-      <TreeView
-        className={makeClass({ 'no-border': isRoot })}
-        label={
-          <TweetComponent
-            isRoot={isRoot}
-            tweet={node.module}
-            collapsed={collapsed}
-            setCollapsed={setCollapsed}
-          />
-        }
-        collapsed={collapsed}
-        onClick={toggleCollapsed}
+    <div
+      className={makeClass('wrapper', { 'no-border': isRoot })}
+      onClick={toggleCollapsed}
+    >
+      <div className="label">
+        <TweetComponent
+          isRoot={isRoot}
+          tweet={node.module}
+          collapsed={collapsed}
+          setCollapsed={setCollapsed}
+        />
+      </div>
+
+      <animated.div
+        ref={ref}
+        style={{ ...props, marginLeft: 40, maxHeight: 'fit-content' }}
       >
-        {node.children.map(child => (
-          <TreeNode key={child.module.id_str} node={child} />
-        ))}
-      </TreeView>
+        {children}
+      </animated.div>
+
       <Connector node={node} collapsed={collapsed} onClick={toggleCollapsed} />
 
       <style jsx>{`
-        .tree-node {
-          overflow: visible;
+        .wrapper {
+          overflow: hidden;
           position: relative;
         }
 
-        :global(.tree-view_arrow) {
-          opacity: 0;
-        }
-
-        :global(.tree-view_item) {
+        .label {
           align-items: baseline;
           display: flex;
-        }
-
-        :global(.tree-view_item) > :global(*) {
-          display: inline;
-        }
-
-        .tree-node :global(.tree-view_children) {
-          margin-left: 40px;
+          margin-left: 12px;
         }
       `}</style>
     </div>
