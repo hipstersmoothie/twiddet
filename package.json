@@ -20,7 +20,7 @@
     "react-dom": "^16.8.3",
     "react-image-lightbox": "^5.1.0",
     "react-spinners": "^0.5.1",
-    "react-treeview": "^0.4.7",
+    "react-spring": "^8.0.8",
     "timeago.js": "^4.0.0-beta.2"
   },
   "scripts": {
