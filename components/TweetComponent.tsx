@@ -15,9 +15,9 @@ interface StatsProps {
 
 const Stats: React.FC<StatsProps> = ({ tweet }) => (
   <p className="media-stats">
-    <Count count={tweet.reply_count} icon="far fa-comment" />
-    <Count count={tweet.retweet_count} icon="fas fa-retweet" />
-    <Count count={tweet.favorite_count} icon="far fa-heart" />
+    <Count count={tweet.reply_count} icon="far fa-comment" type="replies" />
+    <Count count={tweet.retweet_count} icon="fas fa-retweet" type="retweets" />
+    <Count count={tweet.favorite_count} icon="far fa-heart" type="likes" />
 
     <style jsx>{`
       .media-stats {
@@ -106,7 +106,7 @@ const TweetComponent: React.FC<TweetProps> = ({
     >
       {!isRoot && !isQuote && <AuthorImage tweet={tweet} />}
 
-      <div className="content">
+      <article className="content">
         <Author isRoot={isRoot} tweet={tweet} />
 
         <p
@@ -131,7 +131,7 @@ const TweetComponent: React.FC<TweetProps> = ({
         <Stats tweet={tweet} />
 
         {isQuote && <ShowMore tweet={tweet} />}
-      </div>
+      </article>
 
       <style jsx>{`
         .tweet {
