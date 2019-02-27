@@ -1,4 +1,7 @@
-import { TreeNode } from 'react-treeview';
+export interface TreeNode<T> {
+  module: T;
+  children: TreeNode<T>[];
+}
 
 export interface Url {
   url: string;
