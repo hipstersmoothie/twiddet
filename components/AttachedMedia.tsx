@@ -20,6 +20,7 @@ const AttachedMedia: React.FC<AttachedMediaProps> = ({ tweet }) => {
   }
 
   const renderedImages = new Set<string>();
+
   const media = images
     .map((image, index) => {
       if (image.media_url.includes('video_thumb')) {
@@ -34,6 +35,12 @@ const AttachedMedia: React.FC<AttachedMediaProps> = ({ tweet }) => {
             videoUrl = variant.url;
           }
         }
+
+        if (renderedImages.has(image.media_url)) {
+          return null;
+        }
+
+        renderedImages.add(image.media_url);
 
         return (
           <video
