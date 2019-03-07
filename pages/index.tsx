@@ -9,6 +9,14 @@ import { TweetTree } from 'types/twitter';
 import TreeNode from '../components/TreeNode';
 
 async function fetchTweet(tweet: string): Promise<TweetTree> {
+  const match = tweet.match(
+    /https:\/\/(?:mobile.)*twitter\.com\/\S+\/status\/(\d+)/
+  );
+
+  if (match) {
+    tweet = match[1];
+  }
+
   let url = `${window.location.origin}/api/tweet/${tweet}`;
 
   if (process.env.NODE_ENV !== 'production') {
@@ -100,11 +108,9 @@ const useQueryString = () => {
 const Index = () => {
   const [queryString, setQueryString] = useQueryString();
   const [userInput, setUserInput] = React.useState(queryString.tweet as string);
-  const [tweet, setTweet] = React.useState(queryString.tweet as string);
 
   React.useEffect(() => {
     setUserInput(queryString.tweet as string);
-    setTweet(queryString.tweet as string);
   }, [queryString]);
 
   return (
@@ -114,26 +120,16 @@ const Index = () => {
         <input
           value={userInput}
           onChange={e => {
-            let id = e.currentTarget.value;
-            const match = id.match(
-              /https:\/\/twitter\.com\/\S+\/status\/(\d+)/
-            );
-
+            const id = e.currentTarget.value;
             setUserInput(id);
-
-            if (match) {
-              id = match[1];
-            }
-
-            setTweet(id);
             setQueryString({ tweet: id });
           }}
         />
       </div>
       <main>
-        {tweet && (
+        {userInput && (
           <section>
-            <TweetLoader tweet={tweet} />
+            <TweetLoader tweet={userInput} />
           </section>
         )}
       </main>
