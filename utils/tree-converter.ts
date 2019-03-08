@@ -204,6 +204,10 @@ export default class TreeConverter {
 
       content.conversationThread.conversationComponents.forEach(
         tweetTimeline => {
+          if (!tweetTimeline.conversationTweetComponent) {
+            return;
+          }
+
           const tweet =
             conversation.globalObjects.tweets[
               tweetTimeline.conversationTweetComponent.tweet.id
