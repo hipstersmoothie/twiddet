@@ -56,9 +56,11 @@ const LinkCard: React.FC<LinkCardProps> = ({ tweet }) => {
       )}
       <div className="content">
         <p className="title">{tweet.card.binding_values.title.string_value}</p>
-        <p className="description">
-          {tweet.card.binding_values.description.string_value}
-        </p>
+        {tweet.card.binding_values.description && (
+          <p className="description">
+            {tweet.card.binding_values.description.string_value}
+          </p>
+        )}
         {tweet.card.binding_values.vanity_url && (
           <p className="link">
             {tweet.card.binding_values.vanity_url.string_value}
