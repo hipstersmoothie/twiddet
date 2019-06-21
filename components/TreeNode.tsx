@@ -11,6 +11,38 @@ interface TreeNodeProps {
   isRoot?: boolean;
 }
 
+export const waitForImages = (ref: HTMLElement | null, onLoad: () => void) => {
+  if (!ref) {
+    return;
+  }
+
+  const images = Array.from(ref.querySelectorAll('img')).map(
+    img =>
+      new Promise(resolve => {
+        const oldLoad = img.onload;
+
+        if (img.complete) {
+          resolve();
+          return;
+        }
+
+        img.onload = ev => {
+          resolve();
+
+          if (oldLoad) {
+            oldLoad.bind(img)(ev);
+          }
+        };
+      })
+  );
+
+  if (images.length) {
+    Promise.all(images).then(onLoad);
+  } else {
+    onLoad();
+  }
+};
+
 const useInitialHeight = <T extends HTMLElement>(ref: React.RefObject<T>) => {
   const [initialHeight, setInitialHeight] = React.useState<number | undefined>(
     undefined
@@ -21,10 +53,11 @@ const useInitialHeight = <T extends HTMLElement>(ref: React.RefObject<T>) => {
       return;
     }
 
-    setInitialHeight(ref.current.offsetHeight);
-    // We only want this to run once! Hence the empty deps array
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    waitForImages(
+      ref.current,
+      () => ref.current && setInitialHeight(ref.current.offsetHeight)
+    );
+  }, [ref]);
 
   return initialHeight;
 };
