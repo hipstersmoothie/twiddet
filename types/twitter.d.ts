@@ -280,10 +280,16 @@ export interface DataEntry {
   };
 }
 
+export interface Timeline {
+  timelineModule: {
+    items: DataEntry[];
+  };
+}
+
 export interface ConversationEntry {
   entryId: string;
   sortIndex: string;
-  content: DataEntry | Operation;
+  content: DataEntry | Operation | Timeline;
 }
 
 export interface Instruction {

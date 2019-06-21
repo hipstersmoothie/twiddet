@@ -1,6 +1,7 @@
 import {
   Tweet,
   Conversation,
+  Timeline,
   ConversationContent,
   TweetReference,
   DataEntry,
@@ -16,7 +17,9 @@ const isTweet = (content: ConversationContent): content is TweetReference => {
   return Boolean((content as TweetReference).tweet);
 };
 
-const isOperation = (content: DataEntry | Operation): content is Operation => {
+const isOperation = (
+  content: DataEntry | Operation | Timeline
+): content is Operation => {
   return Boolean((content as Operation).operation);
 };
 
@@ -77,10 +80,22 @@ export default class TreeConverter {
           return;
         }
 
-        this.tree = this.insertTweetIntoTree(
-          fullConversation,
-          entry.content.item.content
-        );
+        if ('item' in entry.content) {
+          this.tree = this.insertTweetIntoTree(
+            fullConversation,
+            entry.content.item.content
+          );
+        } else if (
+          entry.content.timelineModule &&
+          entry.content.timelineModule.items
+        ) {
+          entry.content.timelineModule.items.forEach(item => {
+            this.tree = this.insertTweetIntoTree(
+              fullConversation,
+              item.item.content
+            );
+          });
+        }
       });
     });
 
